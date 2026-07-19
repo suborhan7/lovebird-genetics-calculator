@@ -257,8 +257,8 @@ select#species{
 }
 /* Z1/Z2 + T1/T2 assignment groups tinted differently so they read as "linkage" controls */
 .z-assign, .t-assign{
-  display:none; background:var(--gold-soft); border:1px solid var(--gold-border); border-radius:var(--r-sm);
-  padding:8px 10px; margin-top:8px; width:100%;
+  display:none; flex-direction:column; background:var(--gold-soft); border:1px solid var(--gold-border);
+  border-radius:var(--r-sm); padding:8px 10px; margin-top:8px; width:100%;
 }
 .z-assign label, .t-assign label{flex:unset; padding:6px 12px; min-width:44px; margin:0 4px; border-radius:16px}
 .z-assign label:has(input:checked), .t-assign label:has(input:checked){
@@ -444,8 +444,10 @@ button#share-btn:hover{transform:translateY(-1px); box-shadow:var(--sh-md)}
   .gene-options{gap:5px; margin-top:8px; padding-top:8px}
   .gene-btn-group{gap:4px}
   .gene-btn-group label{font-size:.68em; padding:6px 2px; min-width:34px; border-radius:14px}
-  .z-assign, .t-assign{padding:6px 6px}
+  .z-assign, .t-assign{padding:6px 8px}
   .z-assign label, .t-assign label{padding:5px 7px; margin:0 2px; font-size:.68em}
+  .linkage-label{font-size:.72em; margin-right:6px}
+  .linkage-hint{font-size:10.5px; margin-top:5px}
   .mutation-warning-note, .mutation-info-note{font-size:.72em; padding:8px 9px}
 
   button#calc-btn{width:100%}
