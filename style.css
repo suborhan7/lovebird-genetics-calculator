@@ -227,13 +227,13 @@ select#species{
 }
 .mutation-label input[type="checkbox"]:focus-visible{outline:2px solid var(--forest); outline-offset:2px}
 
-.mutation-columns{display:grid; grid-template-columns:150px 1fr; gap:15px; width:100%; align-items:center}
+.mutation-columns{display:grid; grid-template-columns:150px minmax(0,1fr); gap:15px; width:100%; align-items:center}
 .symbol-col{
   font-family:var(--mono); font-weight:700; font-style:italic; color:var(--forest);
   font-size:1.02em; background:var(--grass-soft); padding:5px 9px; border-radius:6px;
   text-align:center; border:1px solid var(--grass-border);
 }
-.name-col{font-size:1em; color:var(--ink); font-style:italic}
+.name-col{font-size:1em; color:var(--ink); font-style:italic; overflow-wrap:break-word; word-break:break-word; min-width:0}
 
 /* ---------- gene options (pills) ---------- */
 .gene-options{display:none; margin-top:12px; padding-top:12px; border-top:1px dashed var(--line-strong); gap:10px; flex-wrap:wrap}
@@ -398,7 +398,6 @@ button#share-btn:hover{transform:translateY(-1px); box-shadow:var(--sh-md)}
    three stages (820px, 600px, 420px), with a horizontal-scroll fallback
    only as a last resort for very small/old devices.
    ========================================================================== */
-.container{align-items:flex-start}
 .bird-column{min-width:0}
 
 @media (max-width:820px){
@@ -409,7 +408,7 @@ button#share-btn:hover{transform:translateY(-1px); box-shadow:var(--sh-md)}
   .locus-subtitle{font-size:.78em; margin:10px 0 6px 8px}
   .mutation-item{margin-left:8px; padding:9px 10px}
   .mutation-item.locus-nested{margin-left:18px}
-  .mutation-columns{grid-template-columns:96px 1fr; gap:8px}
+  .mutation-columns{grid-template-columns:96px minmax(0,1fr); gap:8px}
   .symbol-col{font-size:.86em; padding:3px 6px}
   .name-col{font-size:.9em}
   .gene-btn-group label{font-size:.78em; padding:7px 4px; min-width:44px}
@@ -434,7 +433,7 @@ button#share-btn:hover{transform:translateY(-1px); box-shadow:var(--sh-md)}
   .mutation-item.locus-nested{margin-left:10px}
   .mutation-label{gap:8px}
   .mutation-label input[type="checkbox"]{width:16px; height:16px}
-  .mutation-columns{grid-template-columns:64px 1fr; gap:6px}
+  .mutation-columns{grid-template-columns:64px minmax(0,1fr); gap:6px}
   .symbol-col{font-size:.72em; padding:2px 4px; border-radius:4px}
   .name-col{font-size:.78em; line-height:1.25}
   .gene-options{gap:5px; margin-top:8px; padding-top:8px}
@@ -468,15 +467,18 @@ button#share-btn:hover{transform:translateY(-1px); box-shadow:var(--sh-md)}
 @media (max-width:420px){
   .container{gap:6px}
   .bird-column{padding:10px 7px 12px}
-  .mutation-columns{grid-template-columns:52px 1fr; gap:5px}
+  .mutation-columns{grid-template-columns:52px minmax(0,1fr); gap:5px}
   .symbol-col{font-size:.64em; padding:2px 3px}
   .name-col{font-size:.72em}
   .gene-btn-group label{font-size:.62em; padding:5px 1px; min-width:28px}
 }
 
 @media (max-width:600px){
+  /* overflow-x is a safety net only — the shrinking above should make both
+     columns fit without it on real phone widths; flex:1 1 0 with no
+     min-width floor lets them split whatever space is actually available. */
   .container{flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:4px}
-  .bird-column{flex:1 1 0; min-width:230px}
+  .bird-column{flex:1 1 0}
 }
 
 @media (max-width:600px) and (min-width:1px){
