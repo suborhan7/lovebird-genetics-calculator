@@ -4,31 +4,36 @@
 let lastCalcData = null;
 
 // ==========================================
+// DARK / LIGHT THEME
+// ==========================================
+// The actual theme attribute is set as early as possible by an inline
+// <script> in <head> (before first paint, to avoid a flash of the wrong
+// theme). This just keeps the toggle icon in sync and persists the choice.
+function syncThemeIcon() {
+    const icon = document.getElementById("theme-toggle-icon");
+    if (!icon) return;
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    icon.innerHTML = isDark ? "&#9728;" : "&#9789;"; // sun to go light, moon to go dark
+}
+
+function toggleTheme() {
+    const current = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+    const next = current === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    try { localStorage.setItem("agapornis-theme", next); } catch (e) {}
+    syncThemeIcon();
+}
+
+document.addEventListener("DOMContentLoaded", syncThemeIcon);
+
+// ==========================================
 // 1. LINKAGE DATABASE (Z Chromosome Map)
 // ==========================================
-// Every entry here is a MEASURED recombination (cross-over) fraction between
-// two sex-linked loci. Any locus pair NOT listed here has no published
-// lovebird-specific data — getLinkage() below returns those as
-// confidence:"unknown" and falls back to treating them as independently
-// inherited (recombination 0.5), which is a modelling assumption, not a
-// measurement. This distinction (confirmed vs. unknown) is surfaced to the
-// user in the UI's "Cross-over data" panel and in a dynamic breeding
-// warning, rather than being silently baked into the math.
 const linkageDB = [
-    { loci: ["opaline", "cinnamon"], recombination: 0.33, confidence: "confirmed", source: "Budgerigar Z-linkage map (Taylor 1961), applied to lovebirds by analogy — not measured in Agapornis directly." },
-    { loci: ["opaline", "ino"], recombination: 0.30, confidence: "confirmed", source: "Budgerigar Z-linkage map (Taylor 1961), applied to lovebirds by analogy — not measured in Agapornis directly." },
-    { loci: ["cinnamon", "ino"], recombination: 0.03, confidence: "confirmed", source: "Budgerigar Z-linkage map (Taylor 1961), applied to lovebirds by analogy — not measured in Agapornis directly." }
+    { loci: ["opaline", "cinnamon"], recombination: 0.33 },
+    { loci: ["opaline", "ino"], recombination: 0.30 },
+    { loci: ["cinnamon", "ino"], recombination: 0.03 }
 ];
-
-// Looks up the recombination fraction between two sex-linked loci, and
-// reports HOW confident that number is — rather than the two cases (real
-// data vs. no data) being computationally indistinguishable, as they were
-// when the old code just fell through to a bare 0.5 default with no flag.
-function getLinkage(locusA, locusB) {
-    const hit = linkageDB.find(x => x.loci.includes(locusA) && x.loci.includes(locusB));
-    if (hit) return { recombination: hit.recombination, confidence: "confirmed", source: hit.source };
-    return { recombination: 0.5, confidence: "unknown", source: "No published cross-over data for this pair in any Agapornis species; modelled as fully independent until data exists." };
-}
 
 // ==========================================
 // 2. MUTATION DATABASE
@@ -38,17 +43,17 @@ const mutationDB = [
     { id: "aqua", symbol: "bl^{aq}", name: "aqua", cat: 1, type: "AR", locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["aqua"], sp: { white_eye_ring: "original", roseicollis: "original" } },
     { id: "blue1", symbol: "bl^{1}", name: "blue1", cat: 1, type: "AR", locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["blue1"], sp: { white_eye_ring: "original" } },
     { id: "blue2", symbol: "bl^{2}", name: "blue2", cat: 1, type: "AR", locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["blue2"], sp: { white_eye_ring: "original" } },
-    { id: "rose_blue", symbol: "bl", name: "*blue*", cat: 1, type: "AR", locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["rose_blue"], sp: { roseicollis: "original" }, note: "** needs further investigation" },
+    { id: "rose_blue", symbol: "bl", name: "blue", cat: 1, type: "AR", locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["rose_blue"], sp: { roseicollis: "original" }, note: "** needs further investigation" },
     { id: "turquoise", symbol: "bl^{tq}", name: "turquoise", cat: 1, type: "AR", locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["turquoise"], sp: { roseicollis: "original" } },
     { id: "teal", symbol: "tl", name: "teal", cat: 1, type: "AR", locus: "teal", locusGroup: "default", alleles: ["teal"], sp: { taranta: "original" } },
 
     // Compounds (bl-locus)
-    { id: "aqua_blue1", symbol: "bl^{aq}/bl^{1}", name: "AquaBlue1", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["aqua", "blue1"], sp: { white_eye_ring: "original" } },
-    { id: "aqua_blue2", symbol: "bl^{aq}/bl^{2}", name: "AquaBlue2", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["aqua", "blue2"], sp: { white_eye_ring: "original" } },
-    { id: "blue1_blue2", symbol: "bl^{1}/bl^{2}", name: "Blue1Blue2", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["blue1", "blue2"], sp: { white_eye_ring: "original" } },
-    { id: "aqua_rose_blue", symbol: "bl^{aq}/bl", name: "Aqua*blue*", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["aqua", "rose_blue"], sp: { roseicollis: "original" }, note: "** needs further investigation" },
-    { id: "turquoise_rose_blue", symbol: "bl^{tq}/bl", name: "Turquoise*blue*", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["turquoise", "rose_blue"], sp: { roseicollis: "original" }, note: "** needs further investigation" },
-    { id: "aqua_turquoise", symbol: "bl^{aq}/bl^{tq}", name: "AquaTurquoise", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["aqua", "turquoise"], sp: { roseicollis: "original" } },
+    { id: "aqua_blue1", symbol: "bl^{aq}/bl^{1}", name: "aqua/blue1", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["aqua", "blue1"], sp: { white_eye_ring: "original" } },
+    { id: "aqua_blue2", symbol: "bl^{aq}/bl^{2}", name: "aqua/blue2", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["aqua", "blue2"], sp: { white_eye_ring: "original" } },
+    { id: "blue1_blue2", symbol: "bl^{1}/bl^{2}", name: "blue1/blue2", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["blue1", "blue2"], sp: { white_eye_ring: "original" } },
+    { id: "aqua_rose_blue", symbol: "bl^{aq}/bl", name: "aqua/blue", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["aqua", "rose_blue"], sp: { roseicollis: "original" }, note: "** needs further investigation" },
+    { id: "turquoise_rose_blue", symbol: "bl^{tq}/bl", name: "turquoise/blue", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["turquoise", "rose_blue"], sp: { roseicollis: "original" }, note: "** needs further investigation" },
+    { id: "aqua_turquoise", symbol: "bl^{aq}/bl^{tq}", name: "aqua/turquoise", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["aqua", "turquoise"], sp: { roseicollis: "original" } },
 
     // --- 2 Dark factor ---
     { id: "dark_factor", symbol: "D", name: "dark factor", cat: 2, type: "AID", locus: "dark_factor", locusGroup: "default", alleles: ["dark_factor"], sp: { taranta: "original", roseicollis: "original", white_eye_ring: "original" } },
@@ -72,19 +77,19 @@ const mutationDB = [
     { id: "bronze_fallow", symbol: "a^{bz}", name: "bronze fallow", cat: 4, type: "AR", locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["bronze_fallow"], sp: { taranta: "original", roseicollis: "original", white_eye_ring: "original" } },
 
     // Compounds (a-locus)
-    { id: "pastel_ino", symbol: "a^{pa}/a", name: "PastelIno", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["pastel", "nsl_ino"], sp: { white_eye_ring: "original" } },
-    { id: "dec_ino", symbol: "a^{dec}/a", name: "DecIno", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["dec", "nsl_ino"], sp: { white_eye_ring: "original" } },
-    { id: "pastel_dec", symbol: "a^{pa}/a^{dec}", name: "PastelDec", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["pastel", "dec"], sp: { white_eye_ring: "original" } },
-    { id: "bronze_fallow_ino", symbol: "a^{bz}/a", name: "BronzeFallowIno", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["bronze_fallow", "nsl_ino"], sp: { white_eye_ring: "original" } },
-    { id: "bronze_fallow_dec", symbol: "a^{bz}/a^{dec}", name: "BronzeFallowDec", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["bronze_fallow", "dec"], sp: { white_eye_ring: "original" } },
-    { id: "bronze_fallow_pastel", symbol: "a^{bz}/a^{pa}", name: "BronzeFallowPastel", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["bronze_fallow", "pastel"], sp: { white_eye_ring: "original" } },
+    { id: "pastel_ino", symbol: "a^{pa}/a", name: "pastel/NSL ino", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["pastel", "nsl_ino"], sp: { white_eye_ring: "original" } },
+    { id: "dec_ino", symbol: "a^{dec}/a", name: "dark eyed clear/NSL ino", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["dec", "nsl_ino"], sp: { white_eye_ring: "original" } },
+    { id: "pastel_dec", symbol: "a^{pa}/a^{dec}", name: "pastel/dark eyed clear", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["pastel", "dec"], sp: { white_eye_ring: "original" } },
+    { id: "bronze_fallow_ino", symbol: "a^{bz}/a", name: "bronze fallow/NSL ino", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["bronze_fallow", "nsl_ino"], sp: { white_eye_ring: "original" } },
+    { id: "bronze_fallow_dec", symbol: "a^{bz}/a^{dec}", name: "bronze fallow/dark eyed clear", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["bronze_fallow", "dec"], sp: { white_eye_ring: "original" } },
+    { id: "bronze_fallow_pastel", symbol: "a^{bz}/a^{pa}", name: "bronze fallow/pastel", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["bronze_fallow", "pastel"], sp: { white_eye_ring: "original" } },
 
     // AR (dil-locus & independent)
     { id: "dilute", symbol: "dil", name: "dilute", cat: 4, type: "AR", locus: "dilute", locusGroup: "Multiple Alleles of dil-locus", alleles: ["dilute"], sp: { roseicollis: "original", white_eye_ring: "original" } },
     { id: "pale_fallow", symbol: "pf", name: "pale fallow", cat: 4, type: "AR", locus: "pale_fallow", locusGroup: "Independent Loci", alleles: ["pale_fallow"], sp: { taranta: "original", roseicollis: "original", white_eye_ring: "original" } },
     { id: "dun_fallow", symbol: "df", name: "dun fallow", cat: 4, type: "AR", locus: "dun_fallow", locusGroup: "Independent Loci", alleles: ["dun_fallow"], sp: { white_eye_ring: "original" } },
     { id: "rec_pied", symbol: "s", name: "recessive pied", cat: 4, type: "AR", locus: "rec_pied", locusGroup: "Independent Loci", alleles: ["rec_pied"], sp: { roseicollis: "original", white_eye_ring: "original" } },
-    { id: "faded", symbol: "fd", name: "*faded*", cat: 4, type: "AR", locus: "faded", locusGroup: "Independent Loci", alleles: ["faded"], sp: { white_eye_ring: "original" }, note: "** needs further investigation" },
+    { id: "faded", symbol: "fd", name: "faded", cat: 4, type: "AR", locus: "faded", locusGroup: "Independent Loci", alleles: ["faded"], sp: { white_eye_ring: "original" }, note: "** needs further investigation" },
     { id: "marbled", symbol: "mb", name: "marbled", cat: 4, type: "AR", locus: "marbled", locusGroup: "Independent Loci", alleles: ["marbled"], sp: { roseicollis: "original" } },
     { id: "dm_jade", symbol: "ja", name: "DM jade", cat: 4, type: "AR", locus: "dm_jade", locusGroup: "Independent Loci", alleles: ["dm_jade"], sp: { roseicollis: "original" }, infoNote: "Note: DM Jade is an autosomal recessive, sexually dimorphic mutation. Although inheritance is predicted accurately, males and females with the same genotype may look different. Therefore, the visual appearance of offspring depends on their sex as well as their genotype." },
 
@@ -94,9 +99,9 @@ const mutationDB = [
     { id: "pale", symbol: "ino^{pe}", name: "pale", cat: 4, type: "SLR", locus: "ino", locusGroup: "Multiple Alleles of ino-locus", alleles: ["pale"], sp: { roseicollis: "original", white_eye_ring: "original" } },
 
     // Compounds (ino-locus)
-    { id: "pallid_ino", symbol: "ino^{pd}/ino", name: "PallidIno", cat: 4, type: "SLR", isCompound: true, locus: "ino", locusGroup: "Multiple Alleles of ino-locus", alleles: ["pallid", "sl_ino"], sp: { roseicollis: "original" } },
-    { id: "pale_ino", symbol: "ino^{pe}/ino", name: "PaleIno", cat: 4, type: "SLR", isCompound: true, locus: "ino", locusGroup: "Multiple Alleles of ino-locus", alleles: ["pale", "sl_ino"], sp: { roseicollis: "original" } },
-    { id: "pallid_pale", symbol: "ino^{pd}/ino^{pe}", name: "PallidPale", cat: 4, type: "SLR", isCompound: true, locus: "ino", locusGroup: "Multiple Alleles of ino-locus", alleles: ["pallid", "pale"], sp: { roseicollis: "original", white_eye_ring: "original" } },
+    { id: "pallid_ino", symbol: "ino^{pd}/ino", name: "pallid/SL ino", cat: 4, type: "SLR", isCompound: true, locus: "ino", locusGroup: "Multiple Alleles of ino-locus", alleles: ["pallid", "sl_ino"], sp: { roseicollis: "original" } },
+    { id: "pale_ino", symbol: "ino^{pe}/ino", name: "pale/SL ino", cat: 4, type: "SLR", isCompound: true, locus: "ino", locusGroup: "Multiple Alleles of ino-locus", alleles: ["pale", "sl_ino"], sp: { roseicollis: "original" } },
+    { id: "pallid_pale", symbol: "ino^{pd}/ino^{pe}", name: "pallid/pale", cat: 4, type: "SLR", isCompound: true, locus: "ino", locusGroup: "Multiple Alleles of ino-locus", alleles: ["pallid", "pale"], sp: { roseicollis: "original", white_eye_ring: "original" } },
 
     // SLR (Independent Loci)
     { id: "cinnamon", symbol: "cin", name: "cinnamon", cat: 4, type: "SLR", locus: "cinnamon", locusGroup: "Independent Loci", alleles: ["cinnamon"], sp: { roseicollis: "original", white_eye_ring: "original" } },
@@ -132,16 +137,19 @@ function updateUI() {
     const btn = document.getElementById("calc-btn");
     const rBtn = document.getElementById("reset-btn");
     const symToggleWrap = document.getElementById("symbol-toggle-wrap");
+    const symToggleBtn2 = document.getElementById("toggle-symbols-btn-2");
     const results = document.getElementById("results-container");
 
     if (species === "none") {
         ui.style.display = "none"; btn.style.display = "none"; rBtn.style.display = "none";
         if (symToggleWrap) symToggleWrap.style.display = "none";
+        if (symToggleBtn2) symToggleBtn2.style.display = "none";
         results.style.display = "none";
         return;
     }
     ui.style.display = "flex"; btn.style.display = "inline-block"; rBtn.style.display = "inline-block";
     if (symToggleWrap) symToggleWrap.style.display = "block";
+    if (symToggleBtn2) symToggleBtn2.style.display = "inline-block";
     results.style.display = "none";
     renderBird("sire-categories", species, "male");
     renderBird("dam-categories", species, "female");
@@ -162,8 +170,11 @@ let geneticSymbolsHidden = false;
 function toggleGeneticSymbols() {
     geneticSymbolsHidden = !geneticSymbolsHidden;
     document.body.classList.toggle("hide-genetic-symbols", geneticSymbolsHidden);
-    const btn = document.getElementById("toggle-symbols-btn");
-    if (btn) btn.textContent = geneticSymbolsHidden ? "Show Genetic Symbols" : "Hide Genetic Symbols";
+    const label = geneticSymbolsHidden ? "Show Genetic Symbols" : "Hide Genetic Symbols";
+    const btn1 = document.getElementById("toggle-symbols-btn");
+    const btn2 = document.getElementById("toggle-symbols-btn-2");
+    if (btn1) btn1.textContent = label;
+    if (btn2) btn2.textContent = label;
 }
 
 function resetCalculator() {
@@ -174,8 +185,49 @@ function resetCalculator() {
         itemDiv.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
     });
     document.getElementById("results-container").style.display = "none";
+    clearValidationReminder();
     handleConstraints('sire-categories', 'male');
     handleConstraints('dam-categories', 'female');
+}
+
+// ==========================================
+// REQUIRED-FIELD VALIDATION (before generating results)
+// ==========================================
+// toggleMutation() auto-selects a default Split/Visual radio the moment a
+// mutation checkbox is checked, so in normal use every active item already
+// has a primary selection. This is still checked explicitly (rather than
+// trusted) so that if a mutation item is ever left without its primary
+// Split/Visual/D-DD choice, generating results fails loudly with a specific
+// on-page reminder instead of silently doing nothing.
+function findMissingSelections(containerId, sex) {
+    const container = document.getElementById(containerId);
+    const missing = [];
+    if (!container) return missing;
+    container.querySelectorAll('.mutation-item.active').forEach(item => {
+        const cb = item.querySelector('input[type="checkbox"]');
+        const mut = mutationDB.find(m => m.id === cb.dataset.id);
+        if (!mut) return;
+        const primaryChecked = item.querySelector(`input[type="radio"][name="${sex}_${mut.id}"]:checked`);
+        if (!primaryChecked) missing.push(mut.name);
+    });
+    return missing;
+}
+
+function showValidationReminder(needsSpecies, missingSire, missingDam) {
+    const el = document.getElementById("validation-reminder");
+    if (!el) return;
+    const lines = [];
+    if (needsSpecies) lines.push("Select a species before generating results.");
+    if (missingSire.length) lines.push(`Sire: finish selecting Split/Visual for ${missingSire.join(", ")}.`);
+    if (missingDam.length) lines.push(`Dam: finish selecting Split/Visual for ${missingDam.join(", ")}.`);
+    el.innerHTML = `<strong>Before you can generate results:</strong><br>${lines.join("<br>")}`;
+    el.style.display = "flex";
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function clearValidationReminder() {
+    const el = document.getElementById("validation-reminder");
+    if (el) { el.style.display = "none"; el.innerHTML = ""; }
 }
 
 function toggleMutation(checkbox, containerId, sex) {
@@ -194,6 +246,7 @@ function toggleMutation(checkbox, containerId, sex) {
 }
 
 function handleConstraints(containerId, sex) {
+    clearValidationReminder();
     const container = document.getElementById(containerId);
     for (const [locus, mutIds] of Object.entries(lociGroups)) {
         let activeId = null;
@@ -231,84 +284,77 @@ function handleConstraints(containerId, sex) {
     });
 }
 
-// ==========================================
-// UI TEMPLATE FUNCTIONS (refactored out of one giant nested ternary into
-// small, single-purpose builders — each handles exactly one control shape)
-// ==========================================
-function radioBtn(inputName, val, label, containerId, sex) {
-    return `<label><input type="radio" name="${inputName}" value="${val}" onchange="handleConstraints('${containerId}', '${sex}')"><span>${label}</span></label>`;
-}
-function assignPanel(inputName, kind) {
-    // kind: 'z' (Z1/Z2 chromosome assignment) or 't' (dark-factor T1/T2 phase)
-    const cls = kind === "z" ? "z-assign" : "t-assign";
-    const suffix = kind === "z" ? "_z" : "_t";
-    const opts = kind === "z" ? [["z1", "Z1"], ["z2", "Z2"]] : [["T1", "T1"], ["T2", "T2"]];
-    const note = kind === "z"
-        ? `Each Z chromosome can carry different mutations. Two sex-linked genes placed on <strong>different</strong> Z's can recombine (cross-over) in the offspring — that's what produces cross-over phenotypes like opaline-cinnamon.`
-        : `<strong>T1</strong> = dark factor linked to the green/wild-type chromosome. <strong>T2</strong> = linked to the blue-mutant chromosome. Affects offspring odds when paired with a blue-series split.`;
-    return `<div class="${cls}"><div class="assign-row"><span class="assign-label">${kind === "z" ? "Assign to" : "Phase"}</span>${
-        opts.map((o, i) => `<label class="pillopt"><input type="radio" name="${inputName}${suffix}" value="${o[0]}" ${i === 0 ? "checked" : ""}><span>${o[1]}</span></label>`).join("")
-    }</div><p class="assign-note">${note}</p></div>`;
-}
-function geneButtonsFor(mut, inputName, containerId, sex) {
-    if (mut.isCompound) return radioBtn(inputName, "2", "Visual", containerId, sex);
-    if (mut.id === "dark_factor") return radioBtn(inputName, "1", "D", containerId, sex) + radioBtn(inputName, "2", "DD", containerId, sex) + assignPanel(inputName, "t");
-    if (mut.type === "AR") return radioBtn(inputName, "1", "Split", containerId, sex) + radioBtn(inputName, "2", "Visual", containerId, sex);
-    if (mut.type.includes("SL")) {
-        if (sex !== "male") return radioBtn(inputName, "1", "Visual", containerId, sex);
-        const base = radioBtn(inputName, "1", "Split", containerId, sex) + radioBtn(inputName, "2", "Visual", containerId, sex);
-        return base + assignPanel(inputName, "z");
-    }
-    return radioBtn(inputName, "1", "SF", containerId, sex) + radioBtn(inputName, "2", "DF", containerId, sex);
-}
-function mutationItemHTML(mut, containerId, sex) {
-    const inputName = `${sex}_${mut.id}`;
-    const notes = [
-        mut.warningNote ? `<div class="mnote warn">${mut.warningNote}</div>` : "",
-        mut.note ? `<div class="mnote flag">${mut.note}</div>` : "",
-        mut.infoNote ? `<div class="mnote info">${mut.infoNote}</div>` : ""
-    ].join("");
-    return `<div class="mutation-item">
-        <label class="mutation-label"><input type="checkbox" data-id="${mut.id}" onchange="toggleMutation(this, '${containerId}', '${sex}')">
-            <span class="mut-sym">${renderFormat(mut.symbol)}</span><span class="mut-name">${mut.name}</span></label>
-        <div class="gene-options"><div class="seg">${geneButtonsFor(mut, inputName, containerId, sex)}</div></div>
-        ${notes}
-    </div>`;
-}
-function locusGroupHTML(locusGroup, muts, containerId, sex) {
-    const isNested = locusGroup !== "default";
-    const header = isNested ? `<div class="locus-h">${locusGroup}</div>` : "";
-    return `<div class="${isNested ? "locus-block" : ""}">${header}${muts.map(m => mutationItemHTML(m, containerId, sex)).join("")}</div>`;
-}
-function moiBlockHTML(type, locusGroupsObj, containerId, sex) {
-    const sortedLocus = Object.keys(locusGroupsObj).sort((a, b) => {
-        if (a === "default") return -1; if (b === "default") return 1;
-        if (a === "Independent Loci") return 1; if (b === "Independent Loci") return -1;
-        return a.localeCompare(b);
-    });
-    return `<div class="moi-h">${moiLabels[type] || type}</div>` +
-        sortedLocus.map(lg => locusGroupHTML(lg, locusGroupsObj[lg], containerId, sex)).join("");
-}
-function categoryHTML(catName, catNum, species, containerId, sex, openByDefault) {
-    const validMuts = mutationDB.filter(mut => mut.cat === catNum && mut.sp[species]);
-    if (!validMuts.length) return "";
-    const groupedByMOI = {};
-    validMuts.forEach(mut => {
-        if (sex === "female" && mut.isCompound && mut.type === "SLR") return;
-        if (!groupedByMOI[mut.type]) groupedByMOI[mut.type] = {};
-        const groupName = mut.locusGroup || "default";
-        (groupedByMOI[mut.type][groupName] = groupedByMOI[mut.type][groupName] || []).push(mut);
-    });
-    const sortedMOI = Object.keys(groupedByMOI).sort((a, b) =>
-        ["AR", "AID", "AD", "SLR", "SLID"].indexOf(a) - ["AR", "AID", "AD", "SLR", "SLID"].indexOf(b));
-    return `<details class="cat"${openByDefault ? " open" : ""}><summary>${catName}</summary>` +
-        sortedMOI.map(type => moiBlockHTML(type, groupedByMOI[type], containerId, sex)).join("") +
-        `</details>`;
-}
 function renderBird(containerId, species, sex) {
     const container = document.getElementById(containerId);
-    container.innerHTML = categoriesOrder.map((catName, i) =>
-        categoryHTML(catName, i + 1, species, containerId, sex, i === 0)).join("");
+    container.innerHTML = "";
+
+    categoriesOrder.forEach((catName, index) => {
+        const catNum = index + 1;
+        const validMuts = mutationDB.filter(mut => mut.cat === catNum && mut.sp[species]);
+
+        if (validMuts.length > 0) {
+            let catHTML = `<div class="category"><div class="category-title">${catName}</div>`;
+            let groupedByMOI = {};
+
+            // Group mutations by Mode of Inheritance and Locus Group
+            validMuts.forEach(mut => {
+                if (sex === "female" && mut.isCompound && mut.type === "SLR") return;
+                if (!groupedByMOI[mut.type]) groupedByMOI[mut.type] = {};
+                let groupName = mut.locusGroup || "default";
+                if (!groupedByMOI[mut.type][groupName]) groupedByMOI[mut.type][groupName] = [];
+                groupedByMOI[mut.type][groupName].push(mut);
+            });
+
+            // Sort MOI strictly in this order
+            const sortedMOI = Object.keys(groupedByMOI).sort((a, b) =>
+                ["AR", "AID", "AD", "SLR", "SLID"].indexOf(a) - ["AR", "AID", "AD", "SLR", "SLID"].indexOf(b)
+            );
+
+            sortedMOI.forEach(type => {
+                let locusGroupsObj = groupedByMOI[type];
+                catHTML += `<ul><div class="moi-subtitle">&middot; ${moiLabels[type] || type}</div>`;
+
+                // Sort locus groups
+                const sortedLocus = Object.keys(locusGroupsObj).sort((a, b) => {
+                    if (a === "default") return -1;
+                    if (b === "default") return 1;
+                    if (a === "Independent Loci") return 1;
+                    if (b === "Independent Loci") return -1;
+                    return a.localeCompare(b);
+                });
+
+                sortedLocus.forEach(locusGroup => {
+                    let muts = locusGroupsObj[locusGroup];
+                    const isNested = locusGroup !== "default";
+                    if (isNested) catHTML += `<div class="locus-subtitle">${locusGroup}:</div>`;
+
+                    // Render individual mutations
+                    muts.forEach(mut => {
+                        const inputName = `${sex}_${mut.id}`;
+                        const nestedClass = isNested ? "locus-nested" : "";
+
+                        let geneButtons = mut.isCompound ? `<label><input type="radio" name="${inputName}" value="2" onchange="handleConstraints('${containerId}', '${sex}')"> <span>Visual</span></label>` :
+                            mut.id === "dark_factor" ? `<label><input type="radio" name="${inputName}" value="1" onchange="handleConstraints('${containerId}', '${sex}')"> <span>D</span></label><label><input type="radio" name="${inputName}" value="2" onchange="handleConstraints('${containerId}', '${sex}')"> <span>DD</span></label><div class="t-assign"><div class="linkage-row"><span class="linkage-label">Phase:</span><label><input type="radio" name="${inputName}_t" value="T1" checked> T1</label><label><input type="radio" name="${inputName}_t" value="T2"> T2</label></div><div class="linkage-hint">Note on Dark Factor Linkage: <strong>T1</strong> = Dark factor linked to green/wildtype chromosome (Type 1). <strong>T2</strong> = Dark factor linked to blue mutant chromosome (Type 2). This affects breeding outcomes when paired with blue series birds.</div></div>` :
+                            mut.type === "AR" ? `<label><input type="radio" name="${inputName}" value="1" onchange="handleConstraints('${containerId}', '${sex}')"> <span>Split</span></label><label><input type="radio" name="${inputName}" value="2" onchange="handleConstraints('${containerId}', '${sex}')"> <span>Visual</span></label>` :
+                            mut.type.includes("SL") ? (sex === "male" ? `<label><input type="radio" name="${inputName}" value="1" onchange="handleConstraints('${containerId}', '${sex}')"> <span>Split</span></label><label><input type="radio" name="${inputName}" value="2" onchange="handleConstraints('${containerId}', '${sex}')"> <span>Visual</span></label>` + (mut.type === "SLR" ? `<div class="z-assign"><div class="linkage-row"><span class="linkage-label">Assign to:</span><label><input type="radio" name="${inputName}_z" value="z1" checked> Z1</label><label><input type="radio" name="${inputName}_z" value="z2"> Z2</label></div><div class="linkage-hint">Z Chromosome Note: In males, each Z chromosome can carry different mutations. Placing two SL recessive mutations on the same Z (e.g., <strong>both on Z1</strong>) is required to create crossover phenotypes like <strong>opaline-SL ino</strong>, <strong>opaline-cinnamon</strong>, etc.</div></div>` : `<div class="z-assign"><div class="linkage-row"><span class="linkage-label">Assign to:</span><label><input type="radio" name="${inputName}_z" value="z1" checked> Z1</label><label><input type="radio" name="${inputName}_z" value="z2"> Z2</label></div></div>`) : `<label><input type="radio" name="${inputName}" value="1" onchange="handleConstraints('${containerId}', '${sex}')"> <span>Visual</span></label>`) :
+                            `<label><input type="radio" name="${inputName}" value="1" onchange="handleConstraints('${containerId}', '${sex}')"> <span>SF</span></label><label><input type="radio" name="${inputName}" value="2" onchange="handleConstraints('${containerId}', '${sex}')"> <span>DF</span></label>`;
+
+                        catHTML += `
+                            <div class="mutation-item ${nestedClass}">
+                                <label class="mutation-label"><input type="checkbox" data-id="${mut.id}" onchange="toggleMutation(this, '${containerId}', '${sex}')"><div class="mutation-columns"><div class="symbol-col">${renderFormat(mut.symbol)}</div><div class="name-col">${mut.name}</div></div></label>
+                                <div class="gene-options"><div class="gene-btn-group">${geneButtons}</div></div>
+                                ${mut.warningNote ? `<div class="mutation-warning-note">${mut.warningNote}</div>` : ""}
+                                ${mut.note ? `<div class="mutation-note">${mut.note}</div>` : ""}
+                                ${mut.infoNote ? `<div class="mutation-info-note">${mut.infoNote}</div>` : ""}
+                            </div>`;
+                    });
+                });
+                catHTML += `</ul>`;
+            });
+            catHTML += `</div>`;
+            container.innerHTML += catHTML;
+        }
+    });
     handleConstraints(containerId, sex);
 }
 
@@ -361,13 +407,8 @@ function parseState(containerId, isMale) {
 function generateZGametesMale(z1, z2) {
     let chrom1 = zMapOrder.map(l => z1.find(a => mutationDB.find(m => m.id === a)?.locus === l) || "+");
     let chrom2 = zMapOrder.map(l => z2.find(a => mutationDB.find(m => m.id === a)?.locus === l) || "+");
-    if (JSON.stringify(chrom1) === JSON.stringify(chrom2)) {
-        const result = [{ chr: 'Z', genes: chrom1.filter(a => a !== "+"), prob: 1.0 }];
-        result.unknownLinkagePairs = [];
-        return result;
-    }
+    if (JSON.stringify(chrom1) === JSON.stringify(chrom2)) return [{ chr: 'Z', genes: chrom1.filter(a => a !== "+"), prob: 1.0 }];
     let gametes = [], perms = 1 << zMapOrder.length;
-    const unknownPairsUsed = new Map(); // key "locusA|locusB" -> {loci:[a,b]}
     for (let i = 0; i < perms; i++) {
         let genes = [], p = 1.0;
         for (let j = 0; j < zMapOrder.length; j++) {
@@ -375,27 +416,15 @@ function generateZGametesMale(z1, z2) {
             genes.push(from2 ? chrom2[j] : chrom1[j]);
             if (j > 0) {
                 let cross = from2 !== ((i & (1 << (j - 1))) !== 0);
-                const locusA = zMapOrder[j - 1], locusB = zMapOrder[j];
-                const link = getLinkage(locusA, locusB);
-                p *= cross ? link.recombination : (1 - link.recombination);
-                // Only worth flagging when this boundary is actually doing
-                // something: both flanking loci carry a real mutation on at
-                // least one of the two Z chromosomes, and there's no
-                // confirmed rate backing the number being used.
-                const aActive = chrom1[j - 1] !== "+" || chrom2[j - 1] !== "+";
-                const bActive = chrom1[j] !== "+" || chrom2[j] !== "+";
-                if (link.confidence === "unknown" && aActive && bActive) {
-                    unknownPairsUsed.set(`${locusA}|${locusB}`, { loci: [locusA, locusB] });
-                }
+                let link = linkageDB.find(x => x.loci.includes(zMapOrder[j - 1]) && x.loci.includes(zMapOrder[j]));
+                p *= cross ? (link ? link.recombination : 0.5) : (link ? (1 - link.recombination) : 0.5);
             }
         }
         gametes.push({ genes: genes.filter(a => a !== "+"), prob: p / 2 });
     }
     let condensed = {};
     gametes.forEach(g => { let k = g.genes.sort().join("_"); if (!condensed[k]) condensed[k] = { genes: g.genes, prob: 0 }; condensed[k].prob += g.prob; });
-    const result = Object.values(condensed).filter(g => g.prob > 0);
-    result.unknownLinkagePairs = [...unknownPairsUsed.values()];
-    return result;
+    return Object.values(condensed).filter(g => g.prob > 0);
 }
 
 function generateAutosomalGametes(autoGenes, dfPhase) {
@@ -685,6 +714,16 @@ function translatePhenotype(z1, z2, auto, sex, indPhase, hasSL, offspringMode, b
     // are the first word — in which case they're already correctly cased).
     finalName = capitalizeFirst(finalName);
 
+    // The "type 1"/"type 2" phase text only ever describes the bl-locus
+    // (blue) split — indPhase is only ever set when that split is present
+    // (see isDfHet && isBlSplit above, and the parent-side sIndPhase/dIndPhase
+    // logic in calculateGenetics). So it belongs on that one split segment,
+    // not tacked onto the end of the whole name after every other split.
+    function phaseSuffix() {
+        if (!indPhase) return "";
+        return indPhase === "T1" ? " type 1" : (indPhase === "T2" ? " type 2" : " " + indPhase);
+    }
+
     if (splitTraits.length > 0) {
         splitTraits.sort((a, b) => nameRank(a.cat) - nameRank(b.cat));
 
@@ -697,7 +736,8 @@ function translatePhenotype(z1, z2, auto, sex, indPhase, hasSL, offspringMode, b
                 if (!zGroups[m.zKey]) { zGroups[m.zKey] = []; zOrder.push(m.zKey); }
                 zGroups[m.zKey].push(m);
             } else {
-                splitUnits.push(m.name);
+                const suffix = m.locus === "bl" ? phaseSuffix() : "";
+                splitUnits.push(m.name + suffix);
             }
         });
         
@@ -715,21 +755,23 @@ function translatePhenotype(z1, z2, auto, sex, indPhase, hasSL, offspringMode, b
         finalName += "/" + splitUnits.join("/");
     }
 
-    if (indPhase) finalName += (indPhase === "T1" ? " type 1" : (indPhase === "T2" ? " type 2" : " " + indPhase));
     if (hasSL) finalName += ` (${sex})`;
 
     return { symbol: renderFormat(symbolParts.join("; ")), name: finalName, expressedIDs: expressedIDs };
 }
 
-// ==========================================
-// PURE COMPUTATION CORE — no DOM access anywhere in this function. This is
-// what calculateGenetics() calls to do the actual genetics, and it's also
-// exactly what the self-test harness below calls, so the tested code path
-// and the shipped code path are identical, not a parallel copy.
-// sireState/damState: { z1, z2, autoGenes, dfPhase } — the same shape parseState() returns.
-// ==========================================
-function computeOffspring(sireState, damState) {
-    const sire = sireState, dam = damState;
+function calculateGenetics() {
+    const speciesVal = document.getElementById("species").value;
+    const missingSire = findMissingSelections("sire-categories", "male");
+    const missingDam = findMissingSelections("dam-categories", "female");
+    if (speciesVal === "none" || missingSire.length || missingDam.length) {
+        showValidationReminder(speciesVal === "none", missingSire, missingDam);
+        return;
+    }
+    clearValidationReminder();
+
+    const sire = parseState("sire-categories", true);
+    const dam = parseState("dam-categories", false);
     const hasSL = sire.z1.length > 0 || sire.z2.length > 0 || dam.z1.length > 0;
 
     let sIndPhase = null, dIndPhase = null;
@@ -746,13 +788,17 @@ function computeOffspring(sireState, damState) {
     const sirePheno = translatePhenotype(sire.z1, sire.z2, sire.autoGenes, "male", sIndPhase, true, false, sireBlDfBlock);
     const damPheno = translatePhenotype(dam.z1, [], dam.autoGenes, "female", dIndPhase, true, false, damBlDfBlock);
 
-    // Parental Z haplotype patterns (which loci sit on which chromosome) —
-    // used below purely to flag which offspring rows are cross-over
-    // products, i.e. Z gametes that match neither parental chromosome.
-    const sireChrom1Loci = zMapOrder.filter(l => sire.z1.some(a => mutationDB.find(m => m.id === a)?.locus === l));
-    const sireChrom2Loci = zMapOrder.filter(l => sire.z2.some(a => mutationDB.find(m => m.id === a)?.locus === l));
-    const recombinationPossible = (sireChrom1Loci.length + sireChrom2Loci.length) >= 2 &&
-        JSON.stringify(sireChrom1Loci) !== JSON.stringify(sireChrom2Loci);
+    const sireName = sirePheno.name.replace(" (male)", "");
+    const damName = damPheno.name.replace(" (female)", "");
+    document.getElementById("parents-summary").innerHTML = `
+        <div class="parents-heading">Parents</div>
+        <table class="parents-table">
+            <thead><tr><th class="col-genetic-formula">Genetic Formulas</th><th>Phenotype / Mutation Name</th></tr></thead>
+            <tbody>
+                <tr><td class="genetic-formula col-genetic-formula">${sirePheno.symbol}</td><td><strong>1.0 Sire (Male):</strong> ${sireName}</td></tr>
+                <tr><td class="genetic-formula col-genetic-formula">${damPheno.symbol}</td><td><strong>0.1 Dam (Female):</strong> ${damName}</td></tr>
+            </tbody>
+        </table>`;
 
     const sireZGametes = generateZGametesMale(sire.z1, sire.z2);
     const sireAutoGametes = generateAutosomalGametes(sire.autoGenes, sire.dfPhase);
@@ -762,11 +808,6 @@ function computeOffspring(sireState, damState) {
     let rawOffspring = {};
 
     sireZGametes.forEach(sz => {
-        const szLoci = [...new Set(sz.genes.map(a => mutationDB.find(m => m.id === a)?.locus).filter(Boolean))].sort();
-        const isCrossover = recombinationPossible &&
-            JSON.stringify(szLoci) !== JSON.stringify([...sireChrom1Loci].sort()) &&
-            JSON.stringify(szLoci) !== JSON.stringify([...sireChrom2Loci].sort());
-
         damZGametes.forEach(dz => {
             const sex = dz.chr === "W" ? "female" : "male";
             sireAutoGametes.forEach(sa => {
@@ -790,34 +831,15 @@ function computeOffspring(sireState, damState) {
                     const pheno = translatePhenotype(sz.genes, dz.genes, auto, sex, indPhase, hasSL, true, blDfBlock);
                     const key = pheno.symbol + pheno.name;
 
-                    if (!rawOffspring[key]) rawOffspring[key] = { ...pheno, prob: 0, crossover: isCrossover };
+                    if (!rawOffspring[key]) rawOffspring[key] = { ...pheno, prob: 0 };
                     rawOffspring[key].prob += prob;
                 });
             });
         });
     });
 
-    return { hasSL, sirePheno, damPheno, offspringArray: Object.values(rawOffspring), unknownLinkagePairs: sireZGametes.unknownLinkagePairs || [] };
-}
-
-function calculateGenetics() {
-    const sire = parseState("sire-categories", true);
-    const dam = parseState("dam-categories", false);
-    const { hasSL, sirePheno, damPheno, offspringArray, unknownLinkagePairs } = computeOffspring(sire, dam);
-
-    const sireName = sirePheno.name.replace(" (male)", "");
-    const damName = damPheno.name.replace(" (female)", "");
-    document.getElementById("parents-summary").innerHTML = `
-        <div class="parents-heading">Parents</div>
-        <table class="parents-table">
-            <thead><tr><th class="col-genetic-formula">Genetic Formulas</th><th>Phenotype / Mutation Name</th></tr></thead>
-            <tbody>
-                <tr><td class="genetic-formula col-genetic-formula">${sirePheno.symbol}</td><td><strong>&#9794; Male:</strong> ${sireName}</td></tr>
-                <tr><td class="genetic-formula col-genetic-formula">${damPheno.symbol}</td><td><strong>&#9792; Female:</strong> ${damName}</td></tr>
-            </tbody>
-        </table>`;
-
-    renderResults(offspringArray, hasSL, true, unknownLinkagePairs);
+    const offspringArray = Object.values(rawOffspring);
+    renderResults(offspringArray, hasSL);
 
     // Snapshot just what the results view needs (already-rendered symbol/name
     // strings + probabilities + expressedIDs for the warnings check) so
@@ -835,7 +857,7 @@ function calculateGenetics() {
     document.getElementById("share-link-box").innerHTML = "";
 }
 
-function renderResults(resultsData, hasSL, showShareButton = true, unknownLinkagePairs = []) {
+function renderResults(resultsData, hasSL, showShareButton = true) {
     const container = document.getElementById("results-container");
     const content = document.getElementById("results-content");
     content.innerHTML = "";
@@ -844,13 +866,20 @@ function renderResults(resultsData, hasSL, showShareButton = true, unknownLinkag
     let allExpressedIDs = [];
     resultsData.forEach(r => allExpressedIDs = allExpressedIDs.concat(r.expressedIDs));
 
-    function buildTableHTML(data) {
-        const maxProb = Math.max(...data.map(r => r.prob), 0.0001);
-        return `<table><thead><tr><th class="col-genetic-formula">Genetic Formulas</th><th>Mutation / Phenotype Name</th><th>Probability</th></tr></thead><tbody>` +
-            data.map(r => `<tr><td class="genetic-formula col-genetic-formula"><strong>${r.symbol}</strong></td>` +
-                `<td>${r.name}${r.crossover ? '<span class="co-badge" title="Cross-over product: this offspring inherited a combination of sex-linked genes that were on different Z chromosomes in the sire.">cross-over</span>' : ''}</td>` +
-                `<td><div class="prob-cell"><span class="prob-num">${(r.prob * 100).toFixed(2)}%</span><span class="prob-bar"><i style="width:${Math.max(3, r.prob / maxProb * 100).toFixed(1)}%"></i></span></div></td></tr>`).join("") +
-            `</tbody></table>`;
+    // Only used for offspring rows once they've already been split into the
+    // Male/Female tables below (which still key off the original trailing
+    // " (male)"/" (female)" from translatePhenotype). This purely changes
+    // what's printed in the cell -- stored names, the parent summary, and
+    // the male/female split above are untouched.
+    function formatOffspringName(name) {
+        if (name.endsWith(" (male)")) return "1.0 " + name.slice(0, -" (male)".length);
+        if (name.endsWith(" (female)")) return "0.1 " + name.slice(0, -" (female)".length);
+        return name;
+    }
+
+    function buildTableHTML(data, useOffspringSexPrefix = false) {
+        return `<table><thead><tr><th class="col-genetic-formula">Genetic Formulas</th><th>Phenotype / Mutation Name</th><th>Probability</th></tr></thead><tbody>` +
+            data.map(r => `<tr><td class="genetic-formula col-genetic-formula"><strong>${r.symbol}</strong></td><td>${useOffspringSexPrefix ? formatOffspringName(r.name) : r.name}</td><td>${(r.prob * 100).toFixed(2)}%</td></tr>`).join("") + `</tbody></table>`;
     }
 
     if (!hasSL) {
@@ -859,23 +888,14 @@ function renderResults(resultsData, hasSL, showShareButton = true, unknownLinkag
         let maleOffspring = resultsData.filter(r => r.name.includes('(male)'));
         let femaleOffspring = resultsData.filter(r => r.name.includes('(female)'));
         let html = "";
-        if (maleOffspring.length > 0) html += `<h3 class="sex-m">Male offspring <span class="sexmark">1.0</span></h3>` + buildTableHTML(maleOffspring);
-        if (femaleOffspring.length > 0) html += `<h3 class="sex-f">Female offspring <span class="sexmark">0.1</span></h3>` + buildTableHTML(femaleOffspring);
+        if (maleOffspring.length > 0) html += `<h3>Male Offspring (1.0)</h3>` + buildTableHTML(maleOffspring, true);
+        if (femaleOffspring.length > 0) html += `<h3>Female Offspring (0.1)</h3>` + buildTableHTML(femaleOffspring, true);
         content.innerHTML = html;
     }
 
     const warnings = generateBreedingWarnings([...new Set(allExpressedIDs)]);
     warnings.forEach(note => {
         content.innerHTML += `<div class="mutation-warning-note">${note}</div>`;
-    });
-
-    // Dynamic, data-driven version of the old hardcoded greywing note: this
-    // fires for ANY sex-linked locus pair actually in play in this specific
-    // cross that lacks a confirmed cross-over rate in linkageDB — not just
-    // the one locus someone remembered to hand-annotate.
-    unknownLinkagePairs.forEach(pair => {
-        const names = pair.loci.map(l => mutationDB.find(m => m.locus === l)?.name || l);
-        content.innerHTML += `<div class="mutation-warning-note linkage">No published cross-over rate exists between <strong>${names[0]}</strong> and <strong>${names[1]}</strong> in any Agapornis species. This result assumes they're inherited fully independently (50/50) until that data is measured — see the Cross-over data panel below.</div>`;
     });
 
     container.style.display = "block";
@@ -987,8 +1007,8 @@ function enterSharedView(payload) {
         <table class="parents-table">
             <thead><tr><th class="col-genetic-formula">Genetic Formulas</th><th>Phenotype / Mutation Name</th></tr></thead>
             <tbody>
-                <tr><td class="genetic-formula col-genetic-formula">${payload.sire.symbol}</td><td><strong>&#9794; Male:</strong> ${payload.sire.name}</td></tr>
-                <tr><td class="genetic-formula col-genetic-formula">${payload.dam.symbol}</td><td><strong>&#9792; Female:</strong> ${payload.dam.name}</td></tr>
+                <tr><td class="genetic-formula col-genetic-formula">${payload.sire.symbol}</td><td><strong>1.0 Sire (Male):</strong> ${payload.sire.name}</td></tr>
+                <tr><td class="genetic-formula col-genetic-formula">${payload.dam.symbol}</td><td><strong>0.1 Dam (Female):</strong> ${payload.dam.name}</td></tr>
             </tbody>
         </table>`;
 
@@ -1057,162 +1077,5 @@ function initSpeciesDropdown() {
     });
 }
 
-// ==========================================
-// SELF-TEST HARNESS — known-answer regression checks, run against the exact
-// same computeOffspring()/translatePhenotype() code path the app uses (not
-// a parallel re-implementation). This exists specifically so a future edit
-// that silently breaks a ratio — the class of bug this project has hit
-// before — shows up immediately as a red panel instead of a hand-checked
-// "looks right" guess. Percentages here are whole-clutch (each sex is half
-// the clutch, so e.g. "all daughters visual" reads as 50%, not 100%).
-// ==========================================
-function blankParent() { return { z1: [], z2: [], autoGenes: {}, dfPhase: null }; }
-function pctOf(offspringArray, matcher) { return offspringArray.filter(matcher).reduce((s, r) => s + r.prob, 0); }
-const _near = (a, b, eps = 0.006) => Math.abs(a - b) <= eps;
-
-const SELF_TESTS = [
-  { name: "Autosomal recessive: aqua split × split → 25% visual",
-    run() { const s = blankParent(), d = blankParent(); s.autoGenes.bl = ["aqua", "+"]; d.autoGenes.bl = ["aqua", "+"];
-      const { offspringArray } = computeOffspring(s, d);
-      const v = pctOf(offspringArray, r => /^aqua/i.test(r.name));
-      return { pass: _near(v, .25), got: (v * 100).toFixed(1) + "%", want: "25.0%" }; } },
-
-  { name: "No sex-linked gene active → results are not split by sex",
-    run() { const s = blankParent(), d = blankParent(); s.autoGenes.bl = ["aqua", "+"]; d.autoGenes.bl = ["aqua", "+"];
-      const { hasSL } = computeOffspring(s, d);
-      return { pass: hasSL === false, got: `hasSL=${hasSL}`, want: "false" }; } },
-
-  { name: "CITED (ABE International): green/SL-ino cock × SL-ino hen → 25/25/25/25",
-    run() { const s = blankParent(); s.z1 = ["sl_ino"]; const d = blankParent(); d.z1 = ["sl_ino"];
-      const { offspringArray } = computeOffspring(s, d);
-      const inoM = pctOf(offspringArray, r => /^sl ino green \(male\)$/i.test(r.name));
-      const splitM = pctOf(offspringArray, r => /^green\/sl ino \(male\)$/i.test(r.name));
-      const inoF = pctOf(offspringArray, r => /^sl ino green \(female\)$/i.test(r.name));
-      const grnF = pctOf(offspringArray, r => /^green \(female\)$/i.test(r.name));
-      const pass = _near(inoM, .25) && _near(splitM, .25) && _near(inoF, .25) && _near(grnF, .25);
-      return { pass, got: `${(inoM*100).toFixed(0)}/${(splitM*100).toFixed(0)}/${(inoF*100).toFixed(0)}/${(grnF*100).toFixed(0)}%`, want: "25/25/25/25%" }; } },
-
-  { name: "Sex-linked split cock × normal hen → 25% of clutch visual daughters",
-    run() { const s = blankParent(); s.z1 = ["sl_ino"]; const d = blankParent();
-      const { offspringArray } = computeOffspring(s, d);
-      const dv = pctOf(offspringArray, r => /^sl ino green \(female\)$/i.test(r.name));
-      return { pass: _near(dv, .25), got: (dv * 100).toFixed(1) + "%", want: "25.0%" }; } },
-
-  { name: "Cross-over: cinnamon(Z1) + opaline(Z2), r=0.33 → recombinant daughters 8.25%",
-    run() { const s = blankParent(); s.z1 = ["cinnamon"]; s.z2 = ["opaline"]; const d = blankParent();
-      const { offspringArray } = computeOffspring(s, d);
-      const rec = pctOf(offspringArray, r => /\(female\)$/.test(r.name) && /cinnamon/i.test(r.name) && /opaline/i.test(r.name));
-      return { pass: _near(rec, .0825, .006), got: (rec * 100).toFixed(2) + "%", want: "≈8.25%" }; } },
-
-  { name: "Cross-over rows are flagged: recombinant daughter carries the crossover badge",
-    run() { const s = blankParent(); s.z1 = ["cinnamon"]; s.z2 = ["opaline"]; const d = blankParent();
-      const { offspringArray } = computeOffspring(s, d);
-      const flagged = offspringArray.some(r => r.crossover && /cinnamon/i.test(r.name) && /opaline/i.test(r.name));
-      return { pass: flagged, got: flagged ? "flagged" : "not flagged", want: "flagged" }; } },
-
-  { name: "Incomplete dominant: dark factor SF × SF → 25% DD, 50% D",
-    run() { const s = blankParent(); s.autoGenes.dark_factor = ["dark_factor", "+"]; const d = blankParent(); d.autoGenes.dark_factor = ["dark_factor", "+"];
-      const { offspringArray } = computeOffspring(s, d);
-      const dd = pctOf(offspringArray, r => /^dd /i.test(r.name)); const d1 = pctOf(offspringArray, r => /^d /i.test(r.name));
-      return { pass: _near(dd, .25) && _near(d1, .5), got: `DD ${(dd*100).toFixed(0)}% / D ${(d1*100).toFixed(0)}%`, want: "25% / 50%" }; } },
-
-  { name: "Homozygous selection parses as visual, not split (this project's earlier regression bug)",
-    run() { const t = translatePhenotype([], [], { bl: ["aqua", "aqua"] }, "male", null, false, true, null);
-      return { pass: /^aqua$/i.test(t.name) && !t.name.includes("/"), got: t.name, want: "Aqua (no split suffix)" }; } },
-
-  { name: "Heterozygous selection parses as split, not visual",
-    run() { const t = translatePhenotype([], [], { bl: ["aqua", "+"] }, "male", null, false, true, null);
-      return { pass: /^green\/aqua$/i.test(t.name), got: t.name, want: "Green/aqua" }; } },
-
-  { name: "Dark factor × blue-series linked phase (T1): 43/43/7/7 class split",
-    run() { const s = blankParent(); s.autoGenes.dark_factor = ["dark_factor", "+"]; s.autoGenes.bl = ["aqua", "+"]; s.dfPhase = "T1"; const d = blankParent();
-      const { offspringArray } = computeOffspring(s, d);
-      const dOnly = pctOf(offspringArray, r => /^d green$/i.test(r.name));
-      const aquaOnly = pctOf(offspringArray, r => /^green\/aqua$/i.test(r.name));
-      const clean = pctOf(offspringArray, r => /^green$/i.test(r.name));
-      const both = pctOf(offspringArray, r => /^d green\/aqua/i.test(r.name));
-      const pass = _near(dOnly, .43, .02) && _near(aquaOnly, .43, .02) && _near(clean, .07, .01) && _near(both, .07, .01);
-      return { pass, got: `${(dOnly*100).toFixed(0)}/${(aquaOnly*100).toFixed(0)}/${(clean*100).toFixed(0)}/${(both*100).toFixed(0)}%`, want: "43/43/7/7%" }; } },
-
-  { name: "Two independent AR splits (aqua & orange face) → 6.25% double-visual",
-    run() { const s = blankParent(); s.autoGenes.bl = ["aqua", "+"]; s.autoGenes.orange_face = ["orange_face", "+"];
-      const d = blankParent(); d.autoGenes.bl = ["aqua", "+"]; d.autoGenes.orange_face = ["orange_face", "+"];
-      const { offspringArray } = computeOffspring(s, d);
-      const both = pctOf(offspringArray, r => /orange face aqua/i.test(r.name));
-      return { pass: _near(both, .0625), got: (both * 100).toFixed(2) + "%", want: "6.25%" }; } },
-
-  { name: "getLinkage: confirmed pair (opaline↔cinnamon) returns the measured rate",
-    run() { const l = getLinkage("opaline", "cinnamon");
-      return { pass: _near(l.recombination, .33, .001) && l.confidence === "confirmed", got: `${l.recombination} / ${l.confidence}`, want: "0.33 / confirmed" }; } },
-
-  { name: "getLinkage: unconfirmed pair (cinnamon↔sl_dom_greywing) reports unknown, defaults to 0.5",
-    run() { const l = getLinkage("cinnamon", "sl_dom_greywing");
-      return { pass: _near(l.recombination, .5) && l.confidence === "unknown", got: `${l.recombination} / ${l.confidence}`, want: "0.5 / unknown" }; } },
-
-  { name: "A cross actually using an unconfirmed SL pair surfaces a dynamic warning",
-    run() { const s = blankParent(); s.z1 = ["cinnamon"]; s.z2 = ["sl_dom_greywing"]; const d = blankParent();
-      const { unknownLinkagePairs } = computeOffspring(s, d);
-      const flagged = unknownLinkagePairs.some(p => p.loci.includes("cinnamon") && p.loci.includes("sl_dom_greywing"));
-      return { pass: flagged, got: JSON.stringify(unknownLinkagePairs), want: "contains [cinnamon, sl_dom_greywing]" }; } },
-
-  { name: "A cross with only confirmed-linkage loci reports no unknown pairs",
-    run() { const s = blankParent(); s.z1 = ["cinnamon"]; s.z2 = ["opaline"]; const d = blankParent();
-      const { unknownLinkagePairs } = computeOffspring(s, d);
-      return { pass: unknownLinkagePairs.length === 0, got: JSON.stringify(unknownLinkagePairs), want: "[]" }; } },
-
-  { name: "Sum of all offspring probabilities across a full cross = 100%",
-    run() { const s = blankParent(); s.z1 = ["cinnamon"]; s.z2 = ["opaline"]; s.autoGenes.bl = ["aqua", "+"];
-      const d = blankParent(); d.z1 = ["opaline"];
-      const { offspringArray } = computeOffspring(s, d);
-      const tot = offspringArray.reduce((sum, r) => sum + r.prob, 0);
-      return { pass: _near(tot, 1), got: (tot * 100).toFixed(1) + "%", want: "100.0%" }; } }
-];
-
-function runSelfTests() {
-  const panel = document.getElementById("self-test-body");
-  const pill = document.getElementById("self-test-pill");
-  if (!panel || !pill) return;
-  let passCount = 0;
-  const rows = SELF_TESTS.map(t => {
-    let r; try { r = t.run(); } catch (e) { r = { pass: false, got: "error: " + e.message, want: "—" }; }
-    if (r.pass) passCount++;
-    return `<div class="tcase ${r.pass ? "" : "fail"}"><div class="tcase-top"><span>${t.name}</span><span class="tstatus ${r.pass ? "ok" : "bad"}">${r.pass ? "pass" : "FAIL"}</span></div><div class="tdetail">got ${r.got} · want ${r.want}</div></div>`;
-  });
-  panel.innerHTML = rows.join("");
-  pill.textContent = `${passCount}/${SELF_TESTS.length}`;
-  pill.className = "pill " + (passCount === SELF_TESTS.length ? "ok" : "bad");
-  const details = document.getElementById("self-test-panel");
-  if (details && passCount !== SELF_TESTS.length) details.open = true;
-}
-
-// ==========================================
-// CROSS-OVER DATA PANEL — a visible, always-accurate rendering of exactly
-// what generateZGametesMale() actually knows vs. assumes. Built by pairing
-// up every sex-linked locus in the mutation database combinatorially and
-// looking each pair up via getLinkage(), so a newly added SL mutation
-// automatically shows up here as "unknown" with no extra step required —
-// nobody has to remember to hand-write a note for it.
-// ==========================================
-function renderLinkagePanel() {
-    const body = document.getElementById("linkage-body");
-    if (!body) return;
-    const locusName = l => mutationDB.find(m => m.locus === l)?.name || l;
-    const pairs = [];
-    for (let i = 0; i < allZloci.length; i++) {
-        for (let j = i + 1; j < allZloci.length; j++) {
-            pairs.push({ a: allZloci[i], b: allZloci[j], ...getLinkage(allZloci[i], allZloci[j]) });
-        }
-    }
-    pairs.sort((p, q) => (p.confidence === q.confidence) ? 0 : (p.confidence === "confirmed" ? -1 : 1));
-    body.innerHTML = pairs.map(p => `<div class="lrow">
-        <span class="lpair">${locusName(p.a)} &harr; ${locusName(p.b)}</span>
-        <span class="lval">${p.confidence === "confirmed" ? (p.recombination * 100).toFixed(0) + "% cross-over" : "assumed independent"}</span>
-        <span class="lpill ${p.confidence === "confirmed" ? "ok" : "bad"}">${p.confidence}</span>
-        <span class="lsource">${p.source}</span>
-    </div>`).join("");
-}
-
 document.addEventListener("DOMContentLoaded", initSpeciesDropdown);
 document.addEventListener("DOMContentLoaded", initSharedViewFromURL);
-document.addEventListener("DOMContentLoaded", runSelfTests);
-document.addEventListener("DOMContentLoaded", renderLinkagePanel);

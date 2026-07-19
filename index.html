@@ -1,108 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Agapornis Genetic Calculator</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650;9..144,750&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agapornis Genetic Calculator</title>
+    <script>
+    (function () {
+        try {
+            var saved = localStorage.getItem("agapornis-theme");
+            var theme = saved || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+            document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {}
+    })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Mulish:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="wrap">
 
-  <header class="masthead">
-    <div class="brand">
-      <div class="kicker">Ornitho-genetics · offspring prediction</div>
-      <h1>Agapornis Genetic Calculator</h1>
-      <div class="sub">Sex-linked crossover · dark-factor phase linkage · full mutation catalogue</div>
+    <header class="masthead">
+        <button type="button" id="theme-toggle" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" title="Toggle dark/light mode">
+            <span id="theme-toggle-icon">&#9789;</span>
+        </button>
+        <div class="masthead-brand">
+            <div class="masthead-text">
+                <h1>Agapornis Genetic Calculator</h1>
+                <p class="sub">Predict chick colors and split combinations before you pair your lovebirds.</p>
+            </div>
+            <svg class="masthead-logo" viewBox="0 0 100 100" aria-hidden="true">
+                <path class="masthead-logo-tail" d="M22 66 C10 70 4 82 2 92 C15 86 24 78 30 68 Z"/>
+                <ellipse class="masthead-logo-body" cx="47" cy="60" rx="27" ry="23"/>
+                <path class="masthead-logo-wing" d="M28 50 C39 42 57 44 64 58 C51 61 37 60 28 50 Z"/>
+                <circle class="masthead-logo-head" cx="68" cy="35" r="18"/>
+                <path class="masthead-logo-beak" d="M83 31 C92 32 94 39 87 44 C82 41 80 36 83 31 Z"/>
+                <circle class="masthead-logo-eye" cx="72" cy="31" r="3"/>
+            </svg>
+        </div>
+    </header>
+
+    <!-- Shown only when viewing a shared-results link (#shared=...); replaces
+         the interactive calculator with a read-only summary. Populated by
+         enterSharedView() in script.js. -->
+    <div id="shared-banner" style="display:none;"></div>
+
+    <div class="header-controls" id="header-controls">
+        <label for="species-trigger"><strong>Select Agapornis Species:</strong></label><br><br>
+        <div class="custom-select" id="species-custom">
+            <button type="button" class="custom-select-trigger" id="species-trigger" aria-haspopup="listbox" aria-expanded="false">
+                <span id="species-trigger-label">-- Select Species --</span>
+                <span class="custom-select-arrow">&#9662;</span>
+            </button>
+            <ul class="custom-select-options" id="species-options" role="listbox" style="display:none;">
+                <li role="option" data-value="none">-- Select Species --</li>
+                <li role="option" data-value="white_eye_ring">White Eye-Ring Group (<i>A. fischeri</i>, <i>A. personatus</i>, <i>A. lilianae</i>, <i>A. nigrigenis</i>)</li>
+                <li role="option" data-value="roseicollis"><i>Agapornis roseicollis</i></li>
+                <li role="option" data-value="taranta"><i>Agapornis taranta</i></li>
+            </ul>
+        </div>
+        <!-- Hidden native select: the real value store. All existing JS
+             reads document.getElementById("species").value, so this stays
+             functionally identical to before — only the visible control
+             above it changed, to allow partial italics inside options. -->
+        <select id="species" style="display:none;" tabindex="-1" aria-hidden="true">
+            <option value="none">-- Select Species --</option>
+            <option value="white_eye_ring">White Eye-Ring Group (Fischeri, Personatus, Lilianae, Nigrigenis)</option>
+            <option value="roseicollis">Agapornis roseicollis</option>
+            <option value="taranta">Agapornis taranta</option>
+        </select>
     </div>
-  </header>
 
-  <!-- Shown only when viewing a shared-results link (#shared=...); replaces
-       the interactive calculator with a read-only summary. Populated by
-       enterSharedView() in script.js. -->
-  <div id="shared-banner" style="display:none;"></div>
-
-  <div class="header-controls" id="header-controls">
-    <label for="species-trigger" class="field-label">Select Agapornis species</label>
-    <div class="custom-select" id="species-custom">
-      <button type="button" class="custom-select-trigger" id="species-trigger" aria-haspopup="listbox" aria-expanded="false">
-        <span id="species-trigger-label">— Select species —</span>
-        <span class="custom-select-arrow">&#9662;</span>
-      </button>
-      <ul class="custom-select-options" id="species-options" role="listbox" style="display:none;">
-        <li role="option" data-value="none">— Select species —</li>
-        <li role="option" data-value="white_eye_ring">White Eye-Ring Group (<i>A. fischeri</i>, <i>A. personatus</i>, <i>A. lilianae</i>, <i>A. nigrigenis</i>)</li>
-        <li role="option" data-value="roseicollis"><i>Agapornis roseicollis</i></li>
-        <li role="option" data-value="taranta"><i>Agapornis taranta</i></li>
-      </ul>
+    <div id="symbol-toggle-wrap" style="display:none; text-align:left; margin: 0 0 15px;">
+        <button type="button" id="toggle-symbols-btn" onclick="toggleGeneticSymbols()">Hide Genetic Symbols</button>
     </div>
-    <!-- Hidden native select: the real value store. All existing JS reads
-         document.getElementById("species").value; only the visible control
-         above it changed, to allow partial italics inside options. -->
-    <select id="species" style="display:none;" tabindex="-1" aria-hidden="true">
-      <option value="none">-- Select Species --</option>
-      <option value="white_eye_ring">White Eye-Ring Group (Fischeri, Personatus, Lilianae, Nigrigenis)</option>
-      <option value="roseicollis">Agapornis roseicollis</option>
-      <option value="taranta">Agapornis taranta</option>
-    </select>
-  </div>
 
-  <div id="symbol-toggle-wrap" style="display:none;">
-    <button type="button" class="btn ghost small" id="toggle-symbols-btn" onclick="toggleGeneticSymbols()">Hide genetic symbols</button>
-  </div>
+    <div class="container" id="calculator-ui" style="display: none;">
+        <!-- SIRE COLUMN -->
+        <div class="bird-column" id="sire-column">
+            <h2>1.0 Sire (Male) <span class="sex-badge sex-badge-sire" title="Male lovebirds are the homogametic sex (ZZ)">&#9794; ZZ</span></h2>
+            <div id="sire-categories"></div>
+        </div>
 
-  <div class="container" id="calculator-ui" style="display: none;">
-    <section class="bird-column sire" id="sire-column">
-      <h2><span class="dot"></span>Sire <span class="sexmark">♂ ZZ</span></h2>
-      <div id="sire-categories"></div>
-    </section>
-    <section class="bird-column dam" id="dam-column">
-      <h2><span class="dot"></span>Dam <span class="sexmark">♀ ZW</span></h2>
-      <div id="dam-categories"></div>
-    </section>
-  </div>
-
-  <div id="controls-container" class="actions">
-    <button type="button" class="btn ghost" id="reset-btn" style="display: none;" onclick="resetCalculator()">Reset</button>
-    <button type="button" class="btn primary" id="calc-btn" style="display: none;" onclick="calculateGenetics()">Generate offspring</button>
-  </div>
-
-  <!-- RESULTS DISPLAY -->
-  <div id="results-container">
-    <h2>Breeding outcome</h2>
-    <div id="parents-summary" class="parents-summary"></div>
-    <div id="results-content"></div>
-
-    <div id="share-container" style="display:none;">
-      <button type="button" class="btn ghost small" id="share-btn" onclick="shareResults()">Share results</button>
-      <div id="share-link-box" class="share-link-box" style="display:none;"></div>
+        <!-- DAM COLUMN -->
+        <div class="bird-column" id="dam-column">
+            <h2>0.1 Dam (Female) <span class="sex-badge sex-badge-dam" title="Female lovebirds are the heterogametic sex (ZW) &mdash; they carry the sex-linked traits they pass to sons">&#9792; ZW</span></h2>
+            <div id="dam-categories"></div>
+        </div>
     </div>
-  </div>
 
-  <details class="self-test" id="self-test-panel">
-    <summary>Self-test <span class="pill" id="self-test-pill">…</span>
-      <span class="sthint">known-answer regression checks, run on every load</span></summary>
-    <div id="self-test-body"></div>
-  </details>
+    <div id="controls-container">
+        <div id="validation-reminder" class="validation-reminder" style="display:none;"></div>
+        <div class="action-buttons">
+            <button type="button" id="toggle-symbols-btn-2" style="display: none;" onclick="toggleGeneticSymbols()">Hide Genetic Symbols</button>
+            <button type="button" id="reset-btn" style="display: none;" onclick="resetCalculator()">Reset</button>
+            <button type="button" id="calc-btn" style="display: none;" onclick="calculateGenetics()">Generate Offspring</button>
+        </div>
+    </div>
 
-  <details class="self-test" id="linkage-panel">
-    <summary>Cross-over data
-      <span class="sthint">every sex-linked locus pair, and whether its recombination rate is confirmed or assumed</span></summary>
-    <div id="linkage-body" class="linkage-list"></div>
-  </details>
+    <!-- RESULTS DISPLAY -->
+    <div id="results-container">
+        <h2>Breeding Outcome</h2>
+        <div id="parents-summary" class="parents-summary"></div>
+        <div id="results-content"></div>
 
-  <footer class="footnote">
-    Modes of inheritance and per-species mutation validity follow Ornitho-Genetics VZW's published
-    classification. Sex-linked cross-over distances (opaline↔cinnamon 0.33, opaline↔SL-ino 0.30,
-    cinnamon↔SL-ino 0.03) are budgerigar-derived proxy values — treat them as approximate, not
-    measured-in-lovebird figures. SL dominant greywing has no published linkage data and is modelled
-    as independent of other sex-linked genes until that data exists.
-  </footer>
-</div>
+        <!-- Only shown once a breeding result has been generated (toggled by
+             renderResults() in script.js). Generates a URL that encodes just
+             the parents' phenotype/genotype and the offspring
+             genotype/phenotype/probability table, so opening the link shows
+             a read-only results summary without the interactive calculator. -->
+        <div id="share-container" style="display:none; text-align:center; margin-top:20px;">
+            <button type="button" id="share-btn" onclick="shareResults()">Share Results</button>
+            <div id="share-link-box" class="share-link-box" style="display:none;"></div>
+        </div>
+    </div>
 
-<script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
