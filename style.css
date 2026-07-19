@@ -186,6 +186,11 @@ select#species{
 
 /* ---------- category / MOI / locus headers ---------- */
 .category{margin-bottom:22px}
+/* script.js wraps each mutation group in a bare <ul> for structure only
+   (no bullets are intended) -- without this reset, the browser's default
+   ~40px list padding silently eats width at every breakpoint, which only
+   becomes catastrophic (name-col collapsing to a sliver) at phone widths. */
+.category ul{list-style:none; margin:0; padding:0}
 .category-title{
   font-family:var(--display); font-weight:600; font-size:1em; color:#fff; letter-spacing:.01em;
   background:linear-gradient(135deg,var(--forest),var(--forest-2)); padding:10px 14px;
