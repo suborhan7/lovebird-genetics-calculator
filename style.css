@@ -463,6 +463,14 @@ button#share-btn:active{transform:translateY(0)}
   .mutation-columns{grid-template-columns:64px minmax(0,1fr); gap:6px}
   .symbol-col{font-size:.72em; padding:2px 4px; border-radius:4px}
   .name-col{font-size:.78em; line-height:1.25}
+  /* Compound mutation names (e.g. "AquaBlue1", "PallidPale") are long,
+     unbroken CamelCase words with no space to wrap at -- give them a
+     narrower symbol pill and slightly smaller type so the name has enough
+     room to stay on one line instead of breaking mid-word. Simple names
+     (e.g. "aqua") don't need this and keep the sizing above. */
+  .mutation-item.compound .mutation-columns{grid-template-columns:40px minmax(0,1fr); gap:3px}
+  .mutation-item.compound .symbol-col{font-size:.58em; padding:2px 3px}
+  .mutation-item.compound .name-col{font-size:.68em}
   .gene-options{gap:5px; margin-top:8px; padding-top:8px}
   .gene-btn-group{gap:4px}
   .gene-btn-group label{font-size:.68em; padding:6px 2px; min-width:34px; border-radius:14px}
