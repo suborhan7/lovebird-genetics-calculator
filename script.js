@@ -332,7 +332,6 @@ function renderBird(containerId, species, sex) {
                     muts.forEach(mut => {
                         const inputName = `${sex}_${mut.id}`;
                         const nestedClass = isNested ? "locus-nested" : "";
-                        const compoundClass = mut.isCompound ? "compound" : "";
 
                         let geneButtons = mut.isCompound ? `<label><input type="radio" name="${inputName}" value="2" onchange="handleConstraints('${containerId}', '${sex}')"> <span>Visual</span></label>` :
                             mut.id === "dark_factor" ? `<label><input type="radio" name="${inputName}" value="1" onchange="handleConstraints('${containerId}', '${sex}')"> <span>D</span></label><label><input type="radio" name="${inputName}" value="2" onchange="handleConstraints('${containerId}', '${sex}')"> <span>DD</span></label><div class="t-assign"><div class="linkage-row"><span class="linkage-label">Phase:</span><label><input type="radio" name="${inputName}_t" value="T1" checked> T1</label><label><input type="radio" name="${inputName}_t" value="T2"> T2</label></div><div class="linkage-hint">Note on Dark Factor Linkage: <strong>T1</strong> = Dark factor linked to green/wildtype chromosome (Type 1). <strong>T2</strong> = Dark factor linked to blue mutant chromosome (Type 2). This affects breeding outcomes when paired with blue series birds.</div></div>` :
@@ -341,7 +340,7 @@ function renderBird(containerId, species, sex) {
                             `<label><input type="radio" name="${inputName}" value="1" onchange="handleConstraints('${containerId}', '${sex}')"> <span>SF</span></label><label><input type="radio" name="${inputName}" value="2" onchange="handleConstraints('${containerId}', '${sex}')"> <span>DF</span></label>`;
 
                         catHTML += `
-                            <div class="mutation-item ${nestedClass} ${compoundClass}">
+                            <div class="mutation-item ${nestedClass}">
                                 <label class="mutation-label"><input type="checkbox" data-id="${mut.id}" onchange="toggleMutation(this, '${containerId}', '${sex}')"><div class="mutation-columns"><div class="symbol-col">${renderFormat(mut.symbol)}</div><div class="name-col">${mut.name}</div></div></label>
                                 <div class="gene-options"><div class="gene-btn-group">${geneButtons}</div></div>
                                 ${mut.warningNote ? `<div class="mutation-warning-note">${mut.warningNote}</div>` : ""}
