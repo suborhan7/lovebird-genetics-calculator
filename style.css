@@ -193,21 +193,27 @@ select#species{
 .category ul{list-style:none; margin:0; padding:0}
 .category-title{
   font-family:var(--display); font-weight:600; font-size:1em; color:#fff; letter-spacing:.01em;
-  background:linear-gradient(135deg,var(--forest),var(--forest-2)); padding:10px 40px 10px 14px;
+  background:linear-gradient(135deg,var(--forest),var(--forest-2)); padding:10px 14px;
   border-radius:var(--r-sm); margin-bottom:8px; box-shadow:var(--sh-sm);
-  display:flex; align-items:center; gap:9px;
-  position:relative; cursor:pointer; list-style:none; -webkit-user-select:none; user-select:none;
+  display:flex; align-items:flex-start; gap:9px;
+  cursor:pointer; list-style:none; -webkit-user-select:none; user-select:none;
 }
 .category-title::-webkit-details-marker{display:none}
+/* Chevron flows as a normal (non-absolute) flex item pushed to the row's
+   end via margin-left:auto, instead of being positioned against the box's
+   total height -- that broke on long titles that wrap to several lines,
+   where a height-relative center landed mid-paragraph instead of by the
+   first line. This way it always sits level with the first line, no
+   matter how many lines the title wraps to. */
 .category-title::after{ /* expand/collapse chevron */
-  content:""; position:absolute; right:16px; top:50%; width:8px; height:8px;
+  content:""; width:8px; height:8px; margin:4px 2px 0 auto; flex:none;
   border-right:2px solid rgba(255,255,255,.85); border-bottom:2px solid rgba(255,255,255,.85);
-  transform:translateY(-65%) rotate(45deg); transition:transform .2s; flex:none;
+  transform:rotate(45deg); transition:transform .2s;
 }
-details[open] > .category-title::after{ transform:translateY(-35%) rotate(-135deg) }
+details[open] > .category-title::after{ transform:rotate(-135deg) }
 details.category:not([open]){ margin-bottom:14px }
 .category-title::before{ /* small feather tick */
-  content:""; width:8px; height:8px; border-radius:2px 6px 2px 6px;
+  content:""; width:8px; height:8px; margin-top:4px; border-radius:2px 6px 2px 6px;
   background:var(--grass); flex:none;
 }
 .moi-subtitle{
@@ -247,7 +253,7 @@ details.category:not([open]){ margin-bottom:14px }
   font-size:1.02em; background:var(--grass-soft); padding:5px 9px; border-radius:6px;
   text-align:center; border:1px solid var(--grass-border);
 }
-.name-col{font-size:1em; color:var(--ink); overflow-wrap:break-word; word-break:break-word; min-width:0}
+.name-col{font-size:1.04em; font-weight:800; color:var(--ink); overflow-wrap:break-word; word-break:break-word; min-width:0}
 
 /* ---------- gene options (pills) ---------- */
 .gene-options{display:none; margin-top:12px; padding-top:12px; border-top:1px dashed var(--line-strong); gap:10px; flex-wrap:wrap}
@@ -464,9 +470,9 @@ button#share-btn:active{transform:translateY(0)}
      narrow phone the two fighting for the same row left too little width
      for longer names (esp. unbroken CamelCase compounds like "AquaBlue1"),
      forcing mid-word wraps. Stacked, the name gets the full row width. */
-  .mutation-columns{grid-template-columns:1fr; gap:4px}
-  .symbol-col{font-size:.78em; padding:3px 7px; border-radius:6px; justify-self:start}
-  .name-col{font-size:.85em; line-height:1.3}
+  .mutation-columns{grid-template-columns:1fr; gap:5px}
+  .symbol-col{font-size:.66em; padding:2px 6px; border-radius:5px; justify-self:start}
+  .name-col{font-size:.92em; line-height:1.3}
   .gene-options{gap:5px; margin-top:8px; padding-top:8px}
   .gene-btn-group{gap:4px}
   .gene-btn-group label{font-size:.68em; padding:6px 2px; min-width:34px; border-radius:14px}
@@ -505,9 +511,9 @@ button#share-btn:active{transform:translateY(0)}
 @media (max-width:420px){
   .container{gap:6px}
   .bird-column{padding:10px 7px 12px}
-  .mutation-columns{gap:3px}
-  .symbol-col{font-size:.72em; padding:2px 5px}
-  .name-col{font-size:.78em}
+  .mutation-columns{gap:4px}
+  .symbol-col{font-size:.6em; padding:2px 5px}
+  .name-col{font-size:.86em}
   .gene-btn-group label{font-size:.62em; padding:5px 1px; min-width:28px}
 }
 
