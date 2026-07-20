@@ -470,7 +470,12 @@ button#share-btn:active{transform:translateY(0)}
   .z-assign label, .t-assign label{padding:5px 7px; margin:0 2px; font-size:.68em}
   .linkage-label{font-size:.72em; margin-right:6px}
   .linkage-hint{font-size:10.5px; margin-top:5px}
+  /* checkbox(16px) + label gap(8px) = 24px here, vs. 20px+14px=34px at
+     desktop -- notes need to track that shrunk indent or they drift right
+     of the mutation name they belong to and waste width on narrow screens */
+  .mutation-warning-note, .mutation-note, .mutation-info-note{margin-left:24px}
   .mutation-warning-note, .mutation-info-note{font-size:.72em; padding:8px 9px}
+  .mutation-note{font-size:.72em}
 
   button#calc-btn{width:100%}
   #controls-container button{width:100%; margin:0 0 8px !important}
