@@ -883,7 +883,7 @@ function renderResults(resultsData, hasSL, showShareButton = true) {
     }
 
     if (!hasSL) {
-        content.innerHTML = buildTableHTML(resultsData);
+        content.innerHTML = `<h3>Offspring</h3>` + buildTableHTML(resultsData);
     } else {
         let maleOffspring = resultsData.filter(r => r.name.includes('(male)'));
         let femaleOffspring = resultsData.filter(r => r.name.includes('(female)'));
