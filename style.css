@@ -505,8 +505,15 @@ button#share-btn:active{transform:translateY(0)}
     background:var(--line-strong); border-radius:2px;
   }
 
-  button#calc-btn{width:100%}
-  #controls-container button{width:100%; margin:0 0 8px !important}
+  button#calc-btn, button#reset-btn{width:100%}
+  #controls-container button{margin:0 0 8px !important}
+  /* "Hide Genetic Symbols" is a secondary preference toggle, not a primary
+     action like Generate/Reset -- it doesn't need to claim the full screen
+     width on a phone. Give it its own compact size instead of inheriting
+     the full-width rule above. */
+  button#toggle-symbols-btn, button#toggle-symbols-btn-2{
+    width:auto; display:inline-block; padding:9px 16px; font-size:.8em;
+  }
 
   /* results tables -> stacked cards (kept from the original 600px behaviour,
      extended to the offspring tables so formulas with sup/sub stay readable) */
