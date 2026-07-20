@@ -193,10 +193,19 @@ select#species{
 .category ul{list-style:none; margin:0; padding:0}
 .category-title{
   font-family:var(--display); font-weight:600; font-size:1em; color:#fff; letter-spacing:.01em;
-  background:linear-gradient(135deg,var(--forest),var(--forest-2)); padding:10px 14px;
+  background:linear-gradient(135deg,var(--forest),var(--forest-2)); padding:10px 40px 10px 14px;
   border-radius:var(--r-sm); margin-bottom:8px; box-shadow:var(--sh-sm);
   display:flex; align-items:center; gap:9px;
+  position:relative; cursor:pointer; list-style:none; -webkit-user-select:none; user-select:none;
 }
+.category-title::-webkit-details-marker{display:none}
+.category-title::after{ /* expand/collapse chevron */
+  content:""; position:absolute; right:16px; top:50%; width:8px; height:8px;
+  border-right:2px solid rgba(255,255,255,.85); border-bottom:2px solid rgba(255,255,255,.85);
+  transform:translateY(-65%) rotate(45deg); transition:transform .2s; flex:none;
+}
+details[open] > .category-title::after{ transform:translateY(-35%) rotate(-135deg) }
+details.category:not([open]){ margin-bottom:14px }
 .category-title::before{ /* small feather tick */
   content:""; width:8px; height:8px; border-radius:2px 6px 2px 6px;
   background:var(--grass); flex:none;
@@ -329,7 +338,10 @@ body.hide-genetic-symbols .col-genetic-formula{display:none}
   background:var(--grass-soft); border-left:5px solid var(--grass); padding:16px 18px;
   margin-bottom:22px; border-radius:var(--r-sm); font-size:1.02em; color:var(--forest);
 }
-.parents-heading{font-family:var(--display); font-weight:700; font-size:1.5em; color:var(--forest); margin-bottom:10px; text-align:center}
+.parents-heading{
+  font-family:var(--sans); font-weight:800; font-size:.8em; color:var(--grass-2);
+  text-transform:uppercase; letter-spacing:.08em; margin:0 0 12px; text-align:left;
+}
 .parents-table{width:100%; border-collapse:collapse; font-size:1em; background:transparent}
 .parents-table th{
   background:transparent; color:var(--forest); text-align:left; padding:7px 10px; border:none;
@@ -373,20 +385,25 @@ sub{font-size:.72em; line-height:0; position:relative; vertical-align:baseline; 
 
 /* ---------- share ---------- */
 button#share-btn{
-  font-weight:800; color:#fff; border:none; border-radius:var(--r-sm); cursor:pointer; padding:13px 22px; font-size:1em;
-  background:linear-gradient(135deg,var(--grass),var(--grass-2)); box-shadow:var(--sh-sm); transition:transform .12s, box-shadow .12s;
+  font-family:var(--sans); font-weight:800; color:#fff; border:none; border-radius:999px; cursor:pointer;
+  padding:14px 30px; font-size:1.05em; letter-spacing:.01em;
+  background:linear-gradient(135deg,var(--grass),var(--grass-2)); box-shadow:var(--sh-sm);
+  transition:transform .15s, box-shadow .15s;
 }
-button#share-btn:hover{transform:translateY(-1px); box-shadow:var(--sh-md)}
+button#share-btn:hover{transform:translateY(-2px); box-shadow:var(--sh-md)}
+button#share-btn:active{transform:translateY(0)}
 .share-link-box{margin-top:14px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap; align-items:center}
 .share-link-box input{
-  flex:1; min-width:240px; max-width:500px; padding:11px; border:1.5px solid var(--line-strong); border-radius:var(--r-sm);
+  flex:1; min-width:240px; max-width:500px; padding:11px 16px; border:1.5px solid var(--line-strong); border-radius:999px;
   font-size:.9em; color:var(--ink); background:var(--card); font-family:var(--mono);
 }
 .share-link-box button{
-  padding:11px 17px; border:none; border-radius:var(--r-sm); background:var(--forest); color:#fff; font-weight:700; cursor:pointer;
-  font-size:.95em; white-space:nowrap;
+  font-family:var(--sans); padding:11px 22px; border:none; border-radius:999px; background:var(--forest); color:#fff;
+  font-weight:800; cursor:pointer; font-size:.95em; white-space:nowrap; letter-spacing:.01em;
+  transition:background .15s, transform .15s;
 }
-.share-link-box button:hover{background:var(--forest-2)}
+.share-link-box button:hover{background:var(--forest-2); transform:translateY(-2px)}
+.share-link-box button:active{transform:translateY(0)}
 
 /* ---------- shared-results banner ---------- */
 #shared-banner{

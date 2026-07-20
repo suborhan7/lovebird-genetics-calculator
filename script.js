@@ -293,7 +293,7 @@ function renderBird(containerId, species, sex) {
         const validMuts = mutationDB.filter(mut => mut.cat === catNum && mut.sp[species]);
 
         if (validMuts.length > 0) {
-            let catHTML = `<div class="category"><div class="category-title">${catName}</div>`;
+            let catHTML = `<details class="category"${index === 0 ? " open" : ""}><summary class="category-title">${catName}</summary>`;
             let groupedByMOI = {};
 
             // Group mutations by Mode of Inheritance and Locus Group
@@ -351,7 +351,7 @@ function renderBird(containerId, species, sex) {
                 });
                 catHTML += `</ul>`;
             });
-            catHTML += `</div>`;
+            catHTML += `</details>`;
             container.innerHTML += catHTML;
         }
     });
