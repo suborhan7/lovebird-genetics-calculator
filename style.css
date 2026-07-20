@@ -339,8 +339,13 @@ body.hide-genetic-symbols .col-genetic-formula{display:none}
   margin-bottom:22px; border-radius:var(--r-sm); font-size:1.02em; color:var(--forest);
 }
 .parents-heading{
-  font-family:var(--sans); font-weight:800; font-size:.8em; color:var(--grass-2);
-  text-transform:uppercase; letter-spacing:.08em; margin:0 0 12px; text-align:left;
+  font-family:var(--sans); font-weight:800; font-size:.85em; color:var(--forest);
+  text-transform:uppercase; letter-spacing:.08em; margin:0 0 14px; text-align:left;
+  display:flex; align-items:center; gap:8px;
+}
+.parents-heading::before{
+  content:""; width:8px; height:8px; border-radius:50%; background:var(--grass);
+  box-shadow:0 0 0 3px rgba(88,170,58,.25); flex:none;
 }
 .parents-table{width:100%; border-collapse:collapse; font-size:1em; background:transparent}
 .parents-table th{
