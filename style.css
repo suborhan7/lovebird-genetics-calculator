@@ -281,7 +281,12 @@ details.category:not([open]){ margin-bottom:14px }
 }
 .linkage-row{width:100%; display:flex; justify-content:center; align-items:center; flex-wrap:wrap}
 .linkage-label{font-size:.85em; font-weight:800; color:var(--forest); margin-right:10px}
-.linkage-hint{font-size:12px; color:var(--ink-soft); line-height:1.4; text-align:left; margin-top:6px; padding:0 4px; width:100%}
+.linkage-hint{
+  font-size:12px; color:var(--ink-soft); line-height:1.4; text-align:justify; text-align-last:left;
+  margin-top:6px; padding:0 4px; width:100%; max-height:104px; overflow-y:auto; scrollbar-width:thin;
+}
+.linkage-hint::-webkit-scrollbar{width:4px}
+.linkage-hint::-webkit-scrollbar-thumb{background:var(--line-strong); border-radius:2px}
 
 /* ---------- action buttons ---------- */
 .action-buttons{display:flex; justify-content:center; align-items:center; gap:14px; flex-wrap:wrap}
@@ -392,11 +397,14 @@ tbody tr:last-child td{border-bottom:none}
 .mutation-warning-note{
   background:var(--gold-soft); color:var(--gold-ink); border-left:5px solid var(--gold);
   padding:12px 15px; margin:6px 0 0 34px; border-radius:var(--r-sm); font-size:.9em;
-  display:flex; align-items:flex-start; gap:10px;
+  display:flex; align-items:flex-start; gap:10px; text-align:justify; text-align-last:left;
 }
 .mutation-warning-note::before{content:"⚠"; font-size:1.15em; line-height:1.2; color:var(--gold)}
-.mutation-note{font-size:.8em; font-style:italic; color:var(--gold-ink) !important; margin:6px 0 0 34px}
-.mutation-info-note{font-size:12.5px; color:var(--ink-soft); margin:6px 0 0 34px; line-height:1.4; word-wrap:break-word}
+.mutation-note{font-size:.8em; font-style:italic; color:var(--gold-ink) !important; margin:6px 0 0 34px; text-align:justify; text-align-last:left}
+.mutation-info-note{
+  font-size:12.5px; color:var(--ink-soft); margin:6px 0 0 34px; line-height:1.4; word-wrap:break-word;
+  text-align:justify; text-align-last:left;
+}
 
 sup{font-size:.72em; line-height:0; position:relative; vertical-align:baseline; top:-.5em}
 sub{font-size:.72em; line-height:0; position:relative; vertical-align:baseline; bottom:-.25em}
@@ -487,9 +495,14 @@ button#share-btn:active{transform:translateY(0)}
   .gene-btn-group{gap:4px}
   .gene-btn-group label{font-size:.68em; padding:6px 2px; min-width:34px; border-radius:14px}
   .z-assign, .t-assign{padding:6px 8px}
-  .z-assign label, .t-assign label{padding:5px 7px; margin:0 2px; font-size:.68em}
-  .linkage-label{font-size:.72em; margin-right:6px}
-  .linkage-hint{font-size:10.5px; margin-top:5px}
+  /* "Assign to: Z1 Z2" / "Phase: T1 T2" must stay on one line -- flex-wrap
+     was letting the pills drop to their own row on narrower phones once
+     the label + two pills stopped fitting. nowrap + shrinking both the
+     label and pills keeps it on one line down to 320px without overflow. */
+  .linkage-row{flex-wrap:nowrap}
+  .z-assign label, .t-assign label{padding:5px 5px; margin:0 1px; font-size:.6em; min-width:0}
+  .linkage-label{font-size:.66em; margin-right:4px; white-space:nowrap}
+  .linkage-hint{font-size:10.5px; margin-top:5px; max-height:88px}
   /* checkbox(12px) + label gap(4px) = 16px here, vs. 20px+14px=34px at
      desktop -- notes need to track that shrunk indent or they drift right
      of the mutation name they belong to and waste width on narrow screens */
@@ -512,13 +525,14 @@ button#share-btn:active{transform:translateY(0)}
     background:var(--line-strong); border-radius:2px;
   }
 
-  button#calc-btn, button#reset-btn{width:100%}
+  /* The bottom "Hide/Show Genetic Symbols" button sits directly above
+     Reset/Generate in the same cluster, so it matches their full width for
+     visual consistency. The standalone copy right after species selection
+     (#toggle-symbols-btn) isn't part of that cluster and keeps its own
+     compact size. */
+  button#calc-btn, button#reset-btn, button#toggle-symbols-btn-2{width:100%}
   #controls-container button{margin:0 0 8px !important}
-  /* "Hide Genetic Symbols" is a secondary preference toggle, not a primary
-     action like Generate/Reset -- it doesn't need to claim the full screen
-     width on a phone. Give it its own compact size instead of inheriting
-     the full-width rule above. */
-  button#toggle-symbols-btn, button#toggle-symbols-btn-2{
+  button#toggle-symbols-btn{
     width:auto; display:inline-block; padding:9px 16px; font-size:.8em;
   }
 
