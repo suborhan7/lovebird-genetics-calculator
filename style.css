@@ -329,7 +329,14 @@ button#toggle-symbols-btn:hover, button#toggle-symbols-btn-2:hover{
 /* ---------- genetic-symbols visibility toggle ---------- */
 body.hide-genetic-symbols .symbol-col{display:none}
 body.hide-genetic-symbols .mutation-columns{grid-template-columns:1fr}
-body.hide-genetic-symbols .col-genetic-formula{display:none}
+/* !important because the mobile "stacked card" table layout targets
+   #results-content td with an ID selector, which otherwise always wins
+   over this class-based rule regardless of how many classes it chains --
+   that's why this correctly hid the Parents table (a plain class
+   selector, .parents-table td) but silently left the Offspring table's
+   formula column visible (an ID selector, #results-content td). This
+   toggle is meant to unconditionally win over any table layout. */
+body.hide-genetic-symbols .col-genetic-formula{display:none !important}
 
 /* ---------- results ---------- */
 #results-container{
