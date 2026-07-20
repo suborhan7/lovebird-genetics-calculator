@@ -43,17 +43,17 @@ const mutationDB = [
     { id: "aqua", symbol: "bl^{aq}", name: "aqua", cat: 1, type: "AR", locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["aqua"], sp: { white_eye_ring: "original", roseicollis: "original" } },
     { id: "blue1", symbol: "bl^{1}", name: "blue1", cat: 1, type: "AR", locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["blue1"], sp: { white_eye_ring: "original" } },
     { id: "blue2", symbol: "bl^{2}", name: "blue2", cat: 1, type: "AR", locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["blue2"], sp: { white_eye_ring: "original" } },
-    { id: "rose_blue", symbol: "bl", name: "blue", cat: 1, type: "AR", locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["rose_blue"], sp: { roseicollis: "original" }, note: "** needs further investigation" },
+    { id: "rose_blue", symbol: "bl", name: "*blue*", cat: 1, type: "AR", locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["rose_blue"], sp: { roseicollis: "original" }, note: "** needs further investigation" },
     { id: "turquoise", symbol: "bl^{tq}", name: "turquoise", cat: 1, type: "AR", locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["turquoise"], sp: { roseicollis: "original" } },
     { id: "teal", symbol: "tl", name: "teal", cat: 1, type: "AR", locus: "teal", locusGroup: "default", alleles: ["teal"], sp: { taranta: "original" } },
 
     // Compounds (bl-locus)
-    { id: "aqua_blue1", symbol: "bl^{aq}/bl^{1}", name: "aqua/blue1", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["aqua", "blue1"], sp: { white_eye_ring: "original" } },
-    { id: "aqua_blue2", symbol: "bl^{aq}/bl^{2}", name: "aqua/blue2", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["aqua", "blue2"], sp: { white_eye_ring: "original" } },
-    { id: "blue1_blue2", symbol: "bl^{1}/bl^{2}", name: "blue1/blue2", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["blue1", "blue2"], sp: { white_eye_ring: "original" } },
-    { id: "aqua_rose_blue", symbol: "bl^{aq}/bl", name: "aqua/blue", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["aqua", "rose_blue"], sp: { roseicollis: "original" }, note: "** needs further investigation" },
-    { id: "turquoise_rose_blue", symbol: "bl^{tq}/bl", name: "turquoise/blue", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["turquoise", "rose_blue"], sp: { roseicollis: "original" }, note: "** needs further investigation" },
-    { id: "aqua_turquoise", symbol: "bl^{aq}/bl^{tq}", name: "aqua/turquoise", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["aqua", "turquoise"], sp: { roseicollis: "original" } },
+    { id: "aqua_blue1", symbol: "bl^{aq}/bl^{1}", name: "AquaBlue1", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["aqua", "blue1"], sp: { white_eye_ring: "original" } },
+    { id: "aqua_blue2", symbol: "bl^{aq}/bl^{2}", name: "AquaBlue2", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["aqua", "blue2"], sp: { white_eye_ring: "original" } },
+    { id: "blue1_blue2", symbol: "bl^{1}/bl^{2}", name: "Blue1Blue2", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["blue1", "blue2"], sp: { white_eye_ring: "original" } },
+    { id: "aqua_rose_blue", symbol: "bl^{aq}/bl", name: "Aqua*blue*", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["aqua", "rose_blue"], sp: { roseicollis: "original" }, note: "** needs further investigation" },
+    { id: "turquoise_rose_blue", symbol: "bl^{tq}/bl", name: "Turquoise*blue*", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["turquoise", "rose_blue"], sp: { roseicollis: "original" }, note: "** needs further investigation" },
+    { id: "aqua_turquoise", symbol: "bl^{aq}/bl^{tq}", name: "AquaTurquoise", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["aqua", "turquoise"], sp: { roseicollis: "original" } },
 
     // --- 2 Dark factor ---
     { id: "dark_factor", symbol: "D", name: "dark factor", cat: 2, type: "AID", locus: "dark_factor", locusGroup: "default", alleles: ["dark_factor"], sp: { taranta: "original", roseicollis: "original", white_eye_ring: "original" } },
@@ -77,19 +77,19 @@ const mutationDB = [
     { id: "bronze_fallow", symbol: "a^{bz}", name: "bronze fallow", cat: 4, type: "AR", locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["bronze_fallow"], sp: { taranta: "original", roseicollis: "original", white_eye_ring: "original" } },
 
     // Compounds (a-locus)
-    { id: "pastel_ino", symbol: "a^{pa}/a", name: "pastel/NSL ino", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["pastel", "nsl_ino"], sp: { white_eye_ring: "original" } },
-    { id: "dec_ino", symbol: "a^{dec}/a", name: "dark eyed clear/NSL ino", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["dec", "nsl_ino"], sp: { white_eye_ring: "original" } },
-    { id: "pastel_dec", symbol: "a^{pa}/a^{dec}", name: "pastel/dark eyed clear", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["pastel", "dec"], sp: { white_eye_ring: "original" } },
-    { id: "bronze_fallow_ino", symbol: "a^{bz}/a", name: "bronze fallow/NSL ino", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["bronze_fallow", "nsl_ino"], sp: { white_eye_ring: "original" } },
-    { id: "bronze_fallow_dec", symbol: "a^{bz}/a^{dec}", name: "bronze fallow/dark eyed clear", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["bronze_fallow", "dec"], sp: { white_eye_ring: "original" } },
-    { id: "bronze_fallow_pastel", symbol: "a^{bz}/a^{pa}", name: "bronze fallow/pastel", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["bronze_fallow", "pastel"], sp: { white_eye_ring: "original" } },
+    { id: "pastel_ino", symbol: "a^{pa}/a", name: "PastelIno", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["pastel", "nsl_ino"], sp: { white_eye_ring: "original" } },
+    { id: "dec_ino", symbol: "a^{dec}/a", name: "DecIno", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["dec", "nsl_ino"], sp: { white_eye_ring: "original" } },
+    { id: "pastel_dec", symbol: "a^{pa}/a^{dec}", name: "PastelDec", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["pastel", "dec"], sp: { white_eye_ring: "original" } },
+    { id: "bronze_fallow_ino", symbol: "a^{bz}/a", name: "BronzeFallowIno", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["bronze_fallow", "nsl_ino"], sp: { white_eye_ring: "original" } },
+    { id: "bronze_fallow_dec", symbol: "a^{bz}/a^{dec}", name: "BronzeFallowDec", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["bronze_fallow", "dec"], sp: { white_eye_ring: "original" } },
+    { id: "bronze_fallow_pastel", symbol: "a^{bz}/a^{pa}", name: "BronzeFallowPastel", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["bronze_fallow", "pastel"], sp: { white_eye_ring: "original" } },
 
     // AR (dil-locus & independent)
     { id: "dilute", symbol: "dil", name: "dilute", cat: 4, type: "AR", locus: "dilute", locusGroup: "Multiple Alleles of dil-locus", alleles: ["dilute"], sp: { roseicollis: "original", white_eye_ring: "original" } },
     { id: "pale_fallow", symbol: "pf", name: "pale fallow", cat: 4, type: "AR", locus: "pale_fallow", locusGroup: "Independent Loci", alleles: ["pale_fallow"], sp: { taranta: "original", roseicollis: "original", white_eye_ring: "original" } },
     { id: "dun_fallow", symbol: "df", name: "dun fallow", cat: 4, type: "AR", locus: "dun_fallow", locusGroup: "Independent Loci", alleles: ["dun_fallow"], sp: { white_eye_ring: "original" } },
     { id: "rec_pied", symbol: "s", name: "recessive pied", cat: 4, type: "AR", locus: "rec_pied", locusGroup: "Independent Loci", alleles: ["rec_pied"], sp: { roseicollis: "original", white_eye_ring: "original" } },
-    { id: "faded", symbol: "fd", name: "faded", cat: 4, type: "AR", locus: "faded", locusGroup: "Independent Loci", alleles: ["faded"], sp: { white_eye_ring: "original" }, note: "** needs further investigation" },
+    { id: "faded", symbol: "fd", name: "*faded*", cat: 4, type: "AR", locus: "faded", locusGroup: "Independent Loci", alleles: ["faded"], sp: { white_eye_ring: "original" }, note: "** needs further investigation" },
     { id: "marbled", symbol: "mb", name: "marbled", cat: 4, type: "AR", locus: "marbled", locusGroup: "Independent Loci", alleles: ["marbled"], sp: { roseicollis: "original" } },
     { id: "dm_jade", symbol: "ja", name: "DM jade", cat: 4, type: "AR", locus: "dm_jade", locusGroup: "Independent Loci", alleles: ["dm_jade"], sp: { roseicollis: "original" }, infoNote: "Note: DM Jade is an autosomal recessive, sexually dimorphic mutation. Although inheritance is predicted accurately, males and females with the same genotype may look different. Therefore, the visual appearance of offspring depends on their sex as well as their genotype." },
 
@@ -99,9 +99,9 @@ const mutationDB = [
     { id: "pale", symbol: "ino^{pe}", name: "pale", cat: 4, type: "SLR", locus: "ino", locusGroup: "Multiple Alleles of ino-locus", alleles: ["pale"], sp: { roseicollis: "original", white_eye_ring: "original" } },
 
     // Compounds (ino-locus)
-    { id: "pallid_ino", symbol: "ino^{pd}/ino", name: "pallid/SL ino", cat: 4, type: "SLR", isCompound: true, locus: "ino", locusGroup: "Multiple Alleles of ino-locus", alleles: ["pallid", "sl_ino"], sp: { roseicollis: "original" } },
-    { id: "pale_ino", symbol: "ino^{pe}/ino", name: "pale/SL ino", cat: 4, type: "SLR", isCompound: true, locus: "ino", locusGroup: "Multiple Alleles of ino-locus", alleles: ["pale", "sl_ino"], sp: { roseicollis: "original" } },
-    { id: "pallid_pale", symbol: "ino^{pd}/ino^{pe}", name: "pallid/pale", cat: 4, type: "SLR", isCompound: true, locus: "ino", locusGroup: "Multiple Alleles of ino-locus", alleles: ["pallid", "pale"], sp: { roseicollis: "original", white_eye_ring: "original" } },
+    { id: "pallid_ino", symbol: "ino^{pd}/ino", name: "PallidIno", cat: 4, type: "SLR", isCompound: true, locus: "ino", locusGroup: "Multiple Alleles of ino-locus", alleles: ["pallid", "sl_ino"], sp: { roseicollis: "original" } },
+    { id: "pale_ino", symbol: "ino^{pe}/ino", name: "PaleIno", cat: 4, type: "SLR", isCompound: true, locus: "ino", locusGroup: "Multiple Alleles of ino-locus", alleles: ["pale", "sl_ino"], sp: { roseicollis: "original" } },
+    { id: "pallid_pale", symbol: "ino^{pd}/ino^{pe}", name: "PallidPale", cat: 4, type: "SLR", isCompound: true, locus: "ino", locusGroup: "Multiple Alleles of ino-locus", alleles: ["pallid", "pale"], sp: { roseicollis: "original", white_eye_ring: "original" } },
 
     // SLR (Independent Loci)
     { id: "cinnamon", symbol: "cin", name: "cinnamon", cat: 4, type: "SLR", locus: "cinnamon", locusGroup: "Independent Loci", alleles: ["cinnamon"], sp: { roseicollis: "original", white_eye_ring: "original" } },

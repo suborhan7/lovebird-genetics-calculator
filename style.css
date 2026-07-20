@@ -238,7 +238,7 @@ select#species{
   font-size:1.02em; background:var(--grass-soft); padding:5px 9px; border-radius:6px;
   text-align:center; border:1px solid var(--grass-border);
 }
-.name-col{font-size:1em; color:var(--ink); font-style:italic; overflow-wrap:break-word; word-break:break-word; min-width:0}
+.name-col{font-size:1em; color:var(--ink); overflow-wrap:break-word; word-break:break-word; min-width:0}
 
 /* ---------- gene options (pills) ---------- */
 .gene-options{display:none; margin-top:12px; padding-top:12px; border-top:1px dashed var(--line-strong); gap:10px; flex-wrap:wrap}
