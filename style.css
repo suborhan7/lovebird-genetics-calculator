@@ -538,6 +538,22 @@ button#share-btn:active{transform:translateY(0)}
   #results-content tr:last-child{border-bottom:none}
   #results-content td{padding:4px 0; border:none}
   #results-content td.col-genetic-formula{font-size:1.05em; padding-bottom:6px}
+
+  /* The stacked-card layout above hides <thead> since a header row
+     doesn't mean much once columns collapse to vertical blocks -- but
+     that left every value with no label at all. Repeat the column
+     heading as a small caption above each value instead (the standard
+     CSS-only pattern for responsive tables), keyed by column position
+     since these cells don't carry per-column classes to hook into. */
+  .parents-table td::before, #results-content td::before{
+    display:block; font-size:.66em; font-weight:800; text-transform:uppercase;
+    letter-spacing:.05em; color:var(--ink-soft); margin-bottom:3px;
+  }
+  .parents-table td:nth-child(1)::before{content:"Genetic Formula"}
+  .parents-table td:nth-child(2)::before{content:"Phenotype / Mutation Name"}
+  #results-content td:nth-child(1)::before{content:"Genetic Formula"}
+  #results-content td:nth-child(2)::before{content:"Phenotype / Mutation Name"}
+  #results-content td:nth-child(3)::before{content:"Probability"}
 }
 
 @media (max-width:420px){
