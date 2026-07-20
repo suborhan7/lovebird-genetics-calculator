@@ -489,6 +489,21 @@ button#share-btn:active{transform:translateY(0)}
   .mutation-warning-note, .mutation-note, .mutation-info-note{margin-left:16px}
   .mutation-warning-note, .mutation-info-note{font-size:.72em; padding:8px 9px}
   .mutation-note{font-size:.72em}
+  /* Long notes (e.g. the Dominant Reduced / DM Jade explanations) were
+     stretching the whole mutation list several screens tall on a phone.
+     Cap them to a short scrollable box instead -- info-note gets the same
+     bordered-box treatment warning-note already has, so the "there's more,
+     scroll" affordance is visible rather than looking like clipped text. */
+  .mutation-warning-note, .mutation-info-note{
+    max-height:104px; overflow-y:auto; scrollbar-width:thin;
+  }
+  .mutation-info-note{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--r-sm);
+  }
+  .mutation-warning-note::-webkit-scrollbar, .mutation-info-note::-webkit-scrollbar{width:4px}
+  .mutation-warning-note::-webkit-scrollbar-thumb, .mutation-info-note::-webkit-scrollbar-thumb{
+    background:var(--line-strong); border-radius:2px;
+  }
 
   button#calc-btn{width:100%}
   #controls-container button{width:100%; margin:0 0 8px !important}
