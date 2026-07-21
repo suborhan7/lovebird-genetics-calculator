@@ -48,12 +48,20 @@ const mutationDB = [
     { id: "teal", symbol: "tl", name: "teal", cat: 1, type: "AR", locus: "teal", locusGroup: "default", alleles: ["teal"], sp: { taranta: "original" } },
 
     // Compounds (bl-locus)
-    { id: "aqua_blue1", symbol: "bl^{aq}/bl^{1}", name: "AquaBlue1", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["aqua", "blue1"], sp: { white_eye_ring: "original" } },
-    { id: "aqua_blue2", symbol: "bl^{aq}/bl^{2}", name: "AquaBlue2", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["aqua", "blue2"], sp: { white_eye_ring: "original" } },
-    { id: "blue1_blue2", symbol: "bl^{1}/bl^{2}", name: "Blue1Blue2", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["blue1", "blue2"], sp: { white_eye_ring: "original" } },
-    { id: "aqua_rose_blue", symbol: "bl^{aq}/bl", name: "Aqua*blue*", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["aqua", "rose_blue"], sp: { roseicollis: "original" }, note: "** needs further investigation" },
-    { id: "turquoise_rose_blue", symbol: "bl^{tq}/bl", name: "Turquoise*blue*", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["turquoise", "rose_blue"], sp: { roseicollis: "original" }, note: "** needs further investigation" },
-    { id: "aqua_turquoise", symbol: "bl^{aq}/bl^{tq}", name: "AquaTurquoise", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Multiple Alleles of bl-locus", alleles: ["aqua", "turquoise"], sp: { roseicollis: "original" } },
+    { id: "aqua_blue1", symbol: "bl^{aq}/bl^{1}", name: "AquaBlue1", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Allelic Compounds of bl-locus", alleles: ["aqua", "blue1"], sp: { white_eye_ring: "original" } },
+    { id: "aqua_blue2", symbol: "bl^{aq}/bl^{2}", name: "AquaBlue2", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Allelic Compounds of bl-locus", alleles: ["aqua", "blue2"], sp: { white_eye_ring: "original" } },
+    { id: "blue1_blue2", symbol: "bl^{1}/bl^{2}", name: "Blue1Blue2", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Allelic Compounds of bl-locus", alleles: ["blue1", "blue2"], sp: { white_eye_ring: "original" } },
+    { id: "aqua_rose_blue", symbol: "bl^{aq}/bl", name: "Aqua*Blue*", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Allelic Compounds of bl-locus", alleles: ["aqua", "rose_blue"], sp: { roseicollis: "original" }, note: "** needs further investigation" },
+    { id: "turquoise_rose_blue", symbol: "bl^{tq}/bl", name: "Turquoise*Blue*", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Allelic Compounds of bl-locus", alleles: ["turquoise", "rose_blue"], sp: { roseicollis: "original" }, note: "** needs further investigation" },
+    { id: "aqua_turquoise", symbol: "bl^{aq}/bl^{tq}", name: "AquaTurquoise", cat: 1, type: "AR", isCompound: true, locus: "bl", locusGroup: "Allelic Compounds of bl-locus", alleles: ["aqua", "turquoise"], sp: { roseicollis: "original" } },
+
+    // Sapphire Group (bl-locus) -- blue1/blue2 recombining onto one chromosome
+    // (cis_bl1_bl2) rather than a standard second allele; see the UI warning
+    // note appended after this locus group in renderBird().
+    { id: "sapphire", symbol: "bl^{1}_bl^{2}/bl^{1}_bl^{2}", selector_label: "Sapphire (blue1-blue2)", result_label: "Sapphire", name: "Sapphire", cat: 1, type: "AR", locus: "bl", locusGroup: "Sapphire", isCompound: false, alleles: ["cis_bl1_bl2"], sp: { white_eye_ring: "original" } },
+    { id: "sapphire_blue1", symbol: "bl^{1}_bl^{2}/bl^{1}_bl^{+}", selector_label: "SapphireBlue1 (blue1-blue2/blue1)", result_label: "SapphireBlue1", name: "SapphireBlue1", cat: 1, type: "AR", locus: "bl", locusGroup: "Sapphire", isCompound: true, alleles: ["cis_bl1_bl2", "blue1"], sp: { white_eye_ring: "original" } },
+    { id: "sapphire_blue2", symbol: "bl^{1}_bl^{2}/bl^{+}_bl^{2}", selector_label: "SapphireBlue2 (blue1-blue2/blue2)", result_label: "SapphireBlue2", name: "SapphireBlue2", cat: 1, type: "AR", locus: "bl", locusGroup: "Sapphire", isCompound: true, alleles: ["cis_bl1_bl2", "blue2"], sp: { white_eye_ring: "original" } },
+    { id: "aqua_sapphire", symbol: "bl^{1}_bl^{2}/bl^{aq}_bl^{+}", selector_label: "AquaSapphire (blue1-blue2/aqua)", result_label: "AquaSapphire", name: "AquaSapphire", cat: 1, type: "AR", locus: "bl", locusGroup: "Sapphire", isCompound: true, alleles: ["cis_bl1_bl2", "aqua"], sp: { white_eye_ring: "original" } },
 
     // --- 2 Dark factor ---
     { id: "dark_factor", symbol: "D", name: "dark factor", cat: 2, type: "AID", locus: "dark_factor", locusGroup: "default", alleles: ["dark_factor"], sp: { taranta: "original", roseicollis: "original", white_eye_ring: "original" } },
@@ -77,12 +85,12 @@ const mutationDB = [
     { id: "bronze_fallow", symbol: "a^{bz}", name: "bronze fallow", cat: 4, type: "AR", locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["bronze_fallow"], sp: { taranta: "original", roseicollis: "original", white_eye_ring: "original" } },
 
     // Compounds (a-locus)
-    { id: "pastel_ino", symbol: "a^{pa}/a", name: "PastelIno", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["pastel", "nsl_ino"], sp: { white_eye_ring: "original" } },
-    { id: "dec_ino", symbol: "a^{dec}/a", name: "DecIno", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["dec", "nsl_ino"], sp: { white_eye_ring: "original" } },
-    { id: "pastel_dec", symbol: "a^{pa}/a^{dec}", name: "PastelDec", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["pastel", "dec"], sp: { white_eye_ring: "original" } },
-    { id: "bronze_fallow_ino", symbol: "a^{bz}/a", name: "BronzeFallowIno", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["bronze_fallow", "nsl_ino"], sp: { white_eye_ring: "original" } },
-    { id: "bronze_fallow_dec", symbol: "a^{bz}/a^{dec}", name: "BronzeFallowDec", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["bronze_fallow", "dec"], sp: { white_eye_ring: "original" } },
-    { id: "bronze_fallow_pastel", symbol: "a^{bz}/a^{pa}", name: "BronzeFallowPastel", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Multiple Alleles of a-locus", alleles: ["bronze_fallow", "pastel"], sp: { white_eye_ring: "original" } },
+    { id: "pastel_ino", symbol: "a^{pa}/a", name: "PastelIno", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Allelic Compounds of a-locus", alleles: ["pastel", "nsl_ino"], sp: { white_eye_ring: "original" } },
+    { id: "dec_ino", symbol: "a^{dec}/a", name: "DecIno", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Allelic Compounds of a-locus", alleles: ["dec", "nsl_ino"], sp: { white_eye_ring: "original" } },
+    { id: "pastel_dec", symbol: "a^{pa}/a^{dec}", name: "PastelDec", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Allelic Compounds of a-locus", alleles: ["pastel", "dec"], sp: { white_eye_ring: "original" } },
+    { id: "bronze_fallow_ino", symbol: "a^{bz}/a", name: "BronzeFallowIno", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Allelic Compounds of a-locus", alleles: ["bronze_fallow", "nsl_ino"], sp: { white_eye_ring: "original" } },
+    { id: "bronze_fallow_dec", symbol: "a^{bz}/a^{dec}", name: "BronzeFallowDec", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Allelic Compounds of a-locus", alleles: ["bronze_fallow", "dec"], sp: { white_eye_ring: "original" } },
+    { id: "bronze_fallow_pastel", symbol: "a^{bz}/a^{pa}", name: "BronzeFallowPastel", cat: 4, type: "AR", isCompound: true, locus: "a", locusGroup: "Allelic Compounds of a-locus", alleles: ["bronze_fallow", "pastel"], sp: { white_eye_ring: "original" } },
 
     // AR (dil-locus & independent)
     { id: "dilute", symbol: "dil", name: "dilute", cat: 4, type: "AR", locus: "dilute", locusGroup: "Multiple Alleles of dil-locus", alleles: ["dilute"], sp: { roseicollis: "original", white_eye_ring: "original" } },
@@ -99,9 +107,9 @@ const mutationDB = [
     { id: "pale", symbol: "ino^{pe}", name: "pale", cat: 4, type: "SLR", locus: "ino", locusGroup: "Multiple Alleles of ino-locus", alleles: ["pale"], sp: { roseicollis: "original", white_eye_ring: "original" } },
 
     // Compounds (ino-locus)
-    { id: "pallid_ino", symbol: "ino^{pd}/ino", name: "PallidIno", cat: 4, type: "SLR", isCompound: true, locus: "ino", locusGroup: "Multiple Alleles of ino-locus", alleles: ["pallid", "sl_ino"], sp: { roseicollis: "original" } },
-    { id: "pale_ino", symbol: "ino^{pe}/ino", name: "PaleIno", cat: 4, type: "SLR", isCompound: true, locus: "ino", locusGroup: "Multiple Alleles of ino-locus", alleles: ["pale", "sl_ino"], sp: { roseicollis: "original" } },
-    { id: "pallid_pale", symbol: "ino^{pd}/ino^{pe}", name: "PallidPale", cat: 4, type: "SLR", isCompound: true, locus: "ino", locusGroup: "Multiple Alleles of ino-locus", alleles: ["pallid", "pale"], sp: { roseicollis: "original", white_eye_ring: "original" } },
+    { id: "pallid_ino", symbol: "ino^{pd}/ino", name: "PallidIno", cat: 4, type: "SLR", isCompound: true, locus: "ino", locusGroup: "Allelic Compounds of ino-locus", alleles: ["pallid", "sl_ino"], sp: { roseicollis: "original" } },
+    { id: "pale_ino", symbol: "ino^{pe}/ino", name: "PaleIno", cat: 4, type: "SLR", isCompound: true, locus: "ino", locusGroup: "Allelic Compounds of ino-locus", alleles: ["pale", "sl_ino"], sp: { roseicollis: "original" } },
+    { id: "pallid_pale", symbol: "ino^{pd}/ino^{pe}", name: "PallidPale", cat: 4, type: "SLR", isCompound: true, locus: "ino", locusGroup: "Allelic Compounds of ino-locus", alleles: ["pallid", "pale"], sp: { roseicollis: "original", white_eye_ring: "original" } },
 
     // SLR (Independent Loci)
     { id: "cinnamon", symbol: "cin", name: "cinnamon", cat: 4, type: "SLR", locus: "cinnamon", locusGroup: "Independent Loci", alleles: ["cinnamon"], sp: { roseicollis: "original", white_eye_ring: "original" } },
@@ -129,7 +137,7 @@ const zNamingOrder = ["opaline", "cinnamon", "ino", ...allZloci.filter(l => !["o
 
 const categoriesOrder = ["Basic color mutation", "Dark factor", "Dominant factor influencing the appearance of basic psittacofulvin mutations", "Eumelanin mutations", "Mutation influencing both eumelanin and psittacofulvin expression", "Mutation influencing pigment expression in the mask"];
 const moiLabels = { "AR": "Autosomal Recessive", "AD": "Autosomal Dominant", "AID": "Autosomal Incomplete Dominant", "SLR": "Sex-Linked Recessive", "SLID": "Sex-Linked Incomplete Dominant" };
-const lociGroups = { 'bl': ['aqua', 'blue1', 'blue2', 'rose_blue', 'turquoise', 'aqua_blue1', 'aqua_blue2', 'blue1_blue2', 'aqua_rose_blue', 'turquoise_rose_blue', 'aqua_turquoise'], 'a': ['nsl_ino', 'dec', 'pastel', 'bronze_fallow', 'pastel_ino', 'dec_ino', 'pastel_dec', 'bronze_fallow_ino', 'bronze_fallow_dec', 'bronze_fallow_pastel'], 'dil': ['dilute'], 'ino': ['sl_ino', 'pallid', 'pale', 'pallid_ino', 'pale_ino', 'pallid_pale'] };
+const lociGroups = { 'bl': ['aqua', 'blue1', 'blue2', 'rose_blue', 'turquoise', 'aqua_blue1', 'aqua_blue2', 'blue1_blue2', 'aqua_rose_blue', 'turquoise_rose_blue', 'aqua_turquoise', 'sapphire', 'sapphire_blue1', 'sapphire_blue2', 'aqua_sapphire'], 'a': ['nsl_ino', 'dec', 'pastel', 'bronze_fallow', 'pastel_ino', 'dec_ino', 'pastel_dec', 'bronze_fallow_ino', 'bronze_fallow_dec', 'bronze_fallow_pastel'], 'dil': ['dilute'], 'ino': ['sl_ino', 'pallid', 'pale', 'pallid_ino', 'pale_ino', 'pallid_pale'] };
 
 function updateUI() {
     const species = document.getElementById("species").value;
@@ -269,7 +277,7 @@ function handleConstraints(containerId, sex) {
             if (zAssign) zAssign.style.display = (item.querySelector('input[value="1"]:checked')) ? "flex" : "none";
         }
         if (mut.id === "dark_factor") {
-            const blSplit = container.querySelectorAll('.mutation-item.active input[data-id^="blue1"], .mutation-item.active input[data-id^="blue2"], .mutation-item.active input[data-id^="aqua"], .mutation-item.active input[data-id^="turquoise"], .mutation-item.active input[data-id^="rose_blue"]');
+            const blSplit = container.querySelectorAll('.mutation-item.active input[data-id^="blue1"], .mutation-item.active input[data-id^="blue2"], .mutation-item.active input[data-id^="aqua"], .mutation-item.active input[data-id^="turquoise"], .mutation-item.active input[data-id^="rose_blue"], .mutation-item.active input[data-id="sapphire"]');
             let blSplitActive = false;
             let blVisActive = false;
             blSplit.forEach(el => {
@@ -314,12 +322,38 @@ function renderBird(containerId, species, sex) {
                 let locusGroupsObj = groupedByMOI[type];
                 catHTML += `<ul><div class="moi-subtitle">&middot; ${moiLabels[type] || type}</div>`;
 
-                // Sort locus groups
+                // Sort locus groups. Within a shared locus (e.g. bl-locus),
+                // "Multiple Alleles" comes before "Allelic Compounds" before
+                // "Sapphire" -- getBaseLocus groups those three under the
+                // same locus name first so unrelated loci still sort
+                // alphabetically against each other.
                 const sortedLocus = Object.keys(locusGroupsObj).sort((a, b) => {
                     if (a === "default") return -1;
                     if (b === "default") return 1;
                     if (a === "Independent Loci") return 1;
                     if (b === "Independent Loci") return -1;
+
+                    const getBaseLocus = (name) => {
+                        if (name === "Sapphire") return "bl-locus";
+                        if (name.includes("of ")) return name.split("of ")[1];
+                        return name;
+                    };
+
+                    const rank = (name) => {
+                        if (name.startsWith("Multiple Alleles")) return 1;
+                        if (name.startsWith("Allelic Compounds")) return 2;
+                        if (name === "Sapphire") return 3;
+                        return 4;
+                    };
+
+                    let baseA = getBaseLocus(a);
+                    let baseB = getBaseLocus(b);
+                    if (baseA !== baseB) return baseA.localeCompare(baseB);
+
+                    let rankA = rank(a);
+                    let rankB = rank(b);
+                    if (rankA !== rankB) return rankA - rankB;
+
                     return a.localeCompare(b);
                 });
 
@@ -341,13 +375,17 @@ function renderBird(containerId, species, sex) {
 
                         catHTML += `
                             <div class="mutation-item ${nestedClass}">
-                                <label class="mutation-label"><input type="checkbox" data-id="${mut.id}" onchange="toggleMutation(this, '${containerId}', '${sex}')"><div class="mutation-columns"><div class="symbol-col">${renderFormat(mut.symbol)}</div><div class="name-col">${mut.name}</div></div></label>
+                                <label class="mutation-label"><input type="checkbox" data-id="${mut.id}" onchange="toggleMutation(this, '${containerId}', '${sex}')"><div class="mutation-columns"><div class="symbol-col">${renderFormat(mut.symbol)}</div><div class="name-col">${mut.selector_label || mut.name}</div></div></label>
                                 <div class="gene-options"><div class="gene-btn-group">${geneButtons}</div></div>
                                 ${mut.warningNote ? `<div class="mutation-warning-note">${mut.warningNote}</div>` : ""}
                                 ${mut.note ? `<div class="mutation-note">${mut.note}</div>` : ""}
                                 ${mut.infoNote ? `<div class="mutation-info-note">${mut.infoNote}</div>` : ""}
                             </div>`;
                     });
+
+                    if (locusGroup === "Sapphire") {
+                        catHTML += `<div class="mutation-warning-note">Sapphire is not a separate mutation. It's the result of blue1 and blue2 recombining onto one chromosome during egg or sperm formation — a crossing-over event, not a new gene. This combined chromosome is called blue1-blue2. Sapphire, SapphireBlue1, SapphireBlue2 and AquaSapphire are all birds carrying this recombinant chromosome.</div>`;
+                    }
                 });
                 catHTML += `</ul>`;
             });
@@ -458,6 +496,13 @@ function generateAutosomalGametes(autoGenes, dfPhase) {
 
 function capitalizeFirst(str) {
     if (!str) return str;
+    // Names like "*blue*" lead with a literal asterisk marker (see mutationDB
+    // note), so the letter to sentence-case is the one right after it, not
+    // the asterisk itself.
+    if (str.startsWith('*')) {
+        if (str.length > 1) return '*' + str.charAt(1).toUpperCase() + str.slice(2);
+        return str;
+    }
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
@@ -474,30 +519,84 @@ function formatSymbol(alleles, locus) {
     let wt = getWTSymbol(locus);
     if (alleles[0] === "+" && alleles[1] === "+") return `${wt}/${wt}`;
 
-    let a1 = alleles[0] === "+" ? wt : (mutationDB.find(x => x.id === alleles[0])?.symbol || "+");
-    let a2 = alleles[1] === "+" ? wt : (mutationDB.find(x => x.id === alleles[1])?.symbol || "+");
+    // cis_bl1_bl2 (the Sapphire recombinant chromosome) sorts to the front
+    // regardless of the other allele, so its paired symbol below always
+    // lands in the a1 slot.
+    let sortedAlleles = [...alleles];
+    if (sortedAlleles.includes("cis_bl1_bl2")) {
+        sortedAlleles.sort((a, b) => a === "cis_bl1_bl2" ? -1 : (b === "cis_bl1_bl2" ? 1 : a.localeCompare(b)));
+    } else {
+        sortedAlleles.sort();
+    }
+
+    let a1 = sortedAlleles[0] === "+" ? wt : (sortedAlleles[0] === "cis_bl1_bl2" ? "bl^{1}_bl^{2}" : (mutationDB.find(x => x.id === sortedAlleles[0])?.symbol || "+"));
+    let a2 = sortedAlleles[1] === "+" ? wt : (sortedAlleles[1] === "cis_bl1_bl2" ? "bl^{1}_bl^{2}" : (mutationDB.find(x => x.id === sortedAlleles[1])?.symbol || "+"));
+
+    // When cis_bl1_bl2 is paired with a lone blue1/blue2/aqua allele (e.g. a
+    // SapphireBlue1 bird), that partner's own symbol is shown alongside its
+    // wild-type counterpart on the same recombinant chromosome, rather than
+    // as a bare second allele.
+    if (sortedAlleles.includes("cis_bl1_bl2")) {
+        if (a1 === "bl^{1}") a1 = "bl^{1}_bl^{+}";
+        if (a1 === "bl^{2}") a1 = "bl^{+}_bl^{2}";
+        if (a1 === "bl^{aq}") a1 = "bl^{aq}_bl^{+}";
+        if (a2 === "bl^{1}") a2 = "bl^{1}_bl^{+}";
+        if (a2 === "bl^{2}") a2 = "bl^{+}_bl^{2}";
+        if (a2 === "bl^{aq}") a2 = "bl^{aq}_bl^{+}";
+    }
+
     return `${a1}/${a2}`;
 }
 
 function renderFormat(str) {
-    return str.replace(/\^\{(.*?)\}/g, "<sup>$1</sup>").replace(/_\{(.*?)\}/g, "<sub>$1</sub>");
+    // <wbr> after each "/" gives the browser a break point at the
+    // chromosome divider (invisible, zero-width -- only used if the text
+    // doesn't fit) so long symbols like the Sapphire group's
+    // "bl^1_bl^2/bl^1_bl^2" wrap to one whole chromosome per line instead
+    // of splitting mid-token wherever break-word happens to fit.
+    return str.replace(/\//g, "/<wbr>").replace(/\^\{(.*?)\}/g, "<sup>$1</sup>").replace(/_\{(.*?)\}/g, "<sub>$1</sub>");
 }
 
 function buildLinkedBlDfSymbol(bl_c1, df_c1, bl_c2, df_c2) {
     function sym(id, locus) {
         if (id === "+") return getWTSymbol(locus);
+        if (id === "cis_bl1_bl2") return "bl^{1}_bl^{2}";
         const m = mutationDB.find(x => x.id === id);
         return m ? m.symbol : "+";
     }
-    const chrom1 = `${sym(bl_c1, "bl")}_${sym(df_c1, "dark_factor")}`;
-    const chrom2 = `${sym(bl_c2, "bl")}_${sym(df_c2, "dark_factor")}`;
+
+    let c1_prefix = sym(bl_c1, "bl");
+    let c2_prefix = sym(bl_c2, "bl");
+
+    // Same pairing as formatSymbol(): cis_bl1_bl2 alongside a lone
+    // blue1/blue2/aqua allele shows that allele's own symbol next to its
+    // wild-type counterpart, rather than as a bare second allele.
+    if (bl_c1 === "cis_bl1_bl2" || bl_c2 === "cis_bl1_bl2") {
+        if (bl_c1 === "blue1") c1_prefix = "bl^{1}_bl^{+}";
+        if (bl_c1 === "blue2") c1_prefix = "bl^{+}_bl^{2}";
+        if (bl_c1 === "aqua") c1_prefix = "bl^{aq}_bl^{+}";
+        if (bl_c2 === "blue1") c2_prefix = "bl^{1}_bl^{+}";
+        if (bl_c2 === "blue2") c2_prefix = "bl^{+}_bl^{2}";
+        if (bl_c2 === "aqua") c2_prefix = "bl^{aq}_bl^{+}";
+    }
+
+    const chrom1 = `${c1_prefix}_${sym(df_c1, "dark_factor")}`;
+    const chrom2 = `${c2_prefix}_${sym(df_c2, "dark_factor")}`;
     // Sort the two chromosome strings, same as every other locus's
     // formatSymbol() sorts its pair of alleles before printing — otherwise
     // "sire gives D / dam gives +" and "sire gives + / dam gives D" print
     // in opposite orders even though they're the same genotype, so the
     // offspring-row merge (which matches on exact symbol+name text) treats
     // them as two different rows and halves each one's displayed probability.
-    const [a, b] = [chrom1, chrom2].sort();
+    // The cis_bl1_bl2 chromosome sorts first regardless, matching the same
+    // tie-break formatSymbol() uses for that allele.
+    let arr = [chrom1, chrom2];
+    arr.sort((a, b) => {
+        if (a.includes("bl^{1}_bl^{2}") && !b.includes("bl^{1}_bl^{2}")) return -1;
+        if (b.includes("bl^{1}_bl^{2}") && !a.includes("bl^{1}_bl^{2}")) return 1;
+        return a.localeCompare(b);
+    });
+    const [a, b] = arr;
     return `${a}/${b}`;
 }
 
@@ -539,7 +638,12 @@ function translatePhenotype(z1, z2, auto, sex, indPhase, hasSL, offspringMode, b
     });
 
     orderedLoci.forEach(locus => {
-        let alleles = auto[locus].sort();
+        let alleles = [...auto[locus]];
+        if (alleles.includes("cis_bl1_bl2")) {
+            alleles.sort((a, b) => a === "cis_bl1_bl2" ? -1 : (b === "cis_bl1_bl2" ? 1 : a.localeCompare(b)));
+        } else {
+            alleles.sort();
+        }
         // Every locus reaching this point is one that's actually
         // segregating in this cross (it's a key in `auto`), so its symbol
         // should always be shown — including when this particular
@@ -563,6 +667,11 @@ function translatePhenotype(z1, z2, auto, sex, indPhase, hasSL, offspringMode, b
 
         if (alleles[0] === alleles[1]) {
             let m = mutationDB.find(x => x.id === alleles[0] && !x.isCompound);
+            // cis_bl1_bl2 is an allele value, not a mutationDB id in its own
+            // right (only "sapphire" carries it, as a single-allele entry) --
+            // so a homozygous pair of it has to be looked up by that id
+            // instead of by allele match.
+            if (!m && alleles[0] === "cis_bl1_bl2") m = mutationDB.find(x => x.id === "sapphire");
             if (m) {
                 visualTraits.push({ ...m, zygosity: ["AID", "AD"].includes(m.type) ? "DF" : "VISUAL" });
                 expressedIDs.push(m.id);
@@ -570,6 +679,7 @@ function translatePhenotype(z1, z2, auto, sex, indPhase, hasSL, offspringMode, b
         } else if (alleles[0] === "+" || alleles[1] === "+") {
             let mutId = alleles[0] !== "+" ? alleles[0] : alleles[1];
             let m = mutationDB.find(x => x.id === mutId && !x.isCompound);
+            if (!m && mutId === "cis_bl1_bl2") m = mutationDB.find(x => x.id === "sapphire");
             if (m) {
                 if (["AID", "AD"].includes(m.type)) {
                     visualTraits.push({ ...m, zygosity: "SF" }); expressedIDs.push(m.id);
@@ -585,7 +695,7 @@ function translatePhenotype(z1, z2, auto, sex, indPhase, hasSL, offspringMode, b
                 let m1 = mutationDB.find(x => x.id === alleles[0]);
                 let m2 = mutationDB.find(x => x.id === alleles[1]);
                 if (m1 && m2) {
-                    visualTraits.push({ ...m1, customName: `${m1.name}-${m2.name}` });
+                    visualTraits.push({ ...m1, customName: `${m1.result_label || m1.name}-${m2.result_label || m2.name}` });
                     expressedIDs.push(m1.id, m2.id);
                 }
             }
@@ -677,7 +787,7 @@ function translatePhenotype(z1, z2, auto, sex, indPhase, hasSL, offspringMode, b
     let baseColorMuts = visualTraits.filter(m => m.cat === 1);
 
     function formatModWord(m) {
-        let pName = m.customName ? m.customName : m.name;
+        let pName = m.customName ? m.customName : (m.result_label || m.name);
         if (m.id === "dark_factor") return m.zygosity === "DF" ? "DD" : "D";
         if (m.zygosity === "SF" || m.zygosity === "DF") return `${m.zygosity} ${pName}`;
         return pName;
@@ -703,7 +813,7 @@ function translatePhenotype(z1, z2, auto, sex, indPhase, hasSL, offspringMode, b
     outputUnits.sort((a, b) => a.rank - b.rank);
     outputUnits.forEach(u => finalWords.push(u.text));
 
-    let baseName = baseColorMuts.length > 0 ? baseColorMuts.map(m => m.name).join(" ") : "green";
+    let baseName = baseColorMuts.length > 0 ? baseColorMuts.map(m => m.result_label || m.name).join(" ") : "green";
     finalWords.push(baseName);
 
     let finalName = finalWords.join(" ");
@@ -737,7 +847,7 @@ function translatePhenotype(z1, z2, auto, sex, indPhase, hasSL, offspringMode, b
                 zGroups[m.zKey].push(m);
             } else {
                 const suffix = m.locus === "bl" ? phaseSuffix() : "";
-                splitUnits.push(m.name + suffix);
+                splitUnits.push((m.result_label || m.name) + suffix);
             }
         });
         
@@ -749,7 +859,7 @@ function translatePhenotype(z1, z2, auto, sex, indPhase, hasSL, offspringMode, b
                 if(idxB === -1) idxB = 99;
                 return idxA - idxB;
             });
-            splitUnits.push(zGroups[k].map(m => m.name).join("-"));
+            splitUnits.push(zGroups[k].map(m => m.result_label || m.name).join("-"));
         });
 
         finalName += "/" + splitUnits.join("/");
@@ -793,10 +903,10 @@ function calculateGenetics() {
     document.getElementById("parents-summary").innerHTML = `
         <div class="parents-heading">Parents</div>
         <table class="parents-table">
-            <thead><tr><th class="col-genetic-formula">Genetic Formulas</th><th>Phenotype / Mutation Name</th></tr></thead>
+            <thead><tr><th>Genotype / Mutation Name</th><th class="col-genetic-formula">Genetic Formulas</th></tr></thead>
             <tbody>
-                <tr><td class="genetic-formula col-genetic-formula">${sirePheno.symbol}</td><td><strong>1.0 Sire (Male):</strong> ${sireName}</td></tr>
-                <tr><td class="genetic-formula col-genetic-formula">${damPheno.symbol}</td><td><strong>0.1 Dam (Female):</strong> ${damName}</td></tr>
+                <tr><td><strong>1.0 Sire (Male):</strong> ${sireName}</td><td class="genetic-formula col-genetic-formula">${sirePheno.symbol}</td></tr>
+                <tr><td><strong>0.1 Dam (Female):</strong> ${damName}</td><td class="genetic-formula col-genetic-formula">${damPheno.symbol}</td></tr>
             </tbody>
         </table>`;
 
@@ -878,8 +988,8 @@ function renderResults(resultsData, hasSL, showShareButton = true) {
     }
 
     function buildTableHTML(data, useOffspringSexPrefix = false) {
-        return `<table><thead><tr><th class="col-genetic-formula">Genetic Formulas</th><th>Phenotype / Mutation Name</th><th>Probability</th></tr></thead><tbody>` +
-            data.map(r => `<tr><td class="genetic-formula col-genetic-formula"><strong>${r.symbol}</strong></td><td>${useOffspringSexPrefix ? formatOffspringName(r.name) : r.name}</td><td>${(r.prob * 100).toFixed(2)}%</td></tr>`).join("") + `</tbody></table>`;
+        return `<table><thead><tr><th>Genotype / Mutation Name</th><th>Probability</th><th class="col-genetic-formula">Genetic Formulas</th></tr></thead><tbody>` +
+            data.map(r => `<tr><td>${useOffspringSexPrefix ? formatOffspringName(r.name) : r.name}</td><td>${(r.prob * 100).toFixed(2)}%</td><td class="genetic-formula col-genetic-formula">${r.symbol}</td></tr>`).join("") + `</tbody></table>`;
     }
 
     if (!hasSL) {
@@ -891,6 +1001,15 @@ function renderResults(resultsData, hasSL, showShareButton = true) {
         if (maleOffspring.length > 0) html += `<h3>Male Offspring (1.0)</h3>` + buildTableHTML(maleOffspring, true);
         if (femaleOffspring.length > 0) html += `<h3>Female Offspring (0.1)</h3>` + buildTableHTML(femaleOffspring, true);
         content.innerHTML = html;
+    }
+
+    // blue1_blue2 (het or homozygous, both bl-locus states that put both
+    // recombination-eligible alleles in the same bird) means a Sapphire-family
+    // recombinant is *possible* in this pairing, but the crossover rate has
+    // never been established, so it's flagged rather than folded into the
+    // probabilities above.
+    if (allExpressedIDs.includes("blue1_blue2")) {
+        content.innerHTML += `<div class="mutation-warning-note">This result does not include crossing-over. A blue1-blue2 recombination event — which can produce Sapphire, SapphireBlue1, SapphireBlue2, or AquaSapphire — is possible in this pairing, but its rate hasn't been established, so it isn't factored into the odds shown above.</div>`;
     }
 
     const warnings = generateBreedingWarnings([...new Set(allExpressedIDs)]);
@@ -912,7 +1031,7 @@ function generateBreedingWarnings(mutIDs) {
     const warnings = [];
 
     const eumelaninIDs = ["nsl_ino", "dec", "pastel", "bronze_fallow", "dilute", "pale_fallow", "dun_fallow", "rec_pied", "faded", "marbled", "dm_jade", "sl_ino", "pallid", "pale", "cinnamon", "dom_pied", "dom_reduced", "dom_edged", "euwing", "grey_factor", "sl_dom_greywing"];
-    const psittacineIDs = ["aqua", "blue1", "blue2", "rose_blue", "turquoise", "teal", "orange_face", "pale_headed"];
+    const psittacineIDs = ["aqua", "blue1", "blue2", "rose_blue", "turquoise", "teal", "orange_face", "pale_headed", "sapphire", "sapphire_blue1", "sapphire_blue2", "aqua_sapphire"];
 
     let euCount = mutIDs.filter(id => eumelaninIDs.includes(id) || mutationDB.find(m => m.id === id)?.alleles.some(a => eumelaninIDs.includes(a))).length;
     if (euCount >= 2) warnings.push("This combines multiple eumelanin mutations. Such combinations reduce dark pigment and are generally considered visually unrecognizable/not accepted by breed standards.");
@@ -1005,10 +1124,10 @@ function enterSharedView(payload) {
     document.getElementById("parents-summary").innerHTML = `
         <div class="parents-heading">Parents</div>
         <table class="parents-table">
-            <thead><tr><th class="col-genetic-formula">Genetic Formulas</th><th>Phenotype / Mutation Name</th></tr></thead>
+            <thead><tr><th>Genotype / Mutation Name</th><th class="col-genetic-formula">Genetic Formulas</th></tr></thead>
             <tbody>
-                <tr><td class="genetic-formula col-genetic-formula">${payload.sire.symbol}</td><td><strong>1.0 Sire (Male):</strong> ${payload.sire.name}</td></tr>
-                <tr><td class="genetic-formula col-genetic-formula">${payload.dam.symbol}</td><td><strong>0.1 Dam (Female):</strong> ${payload.dam.name}</td></tr>
+                <tr><td><strong>1.0 Sire (Male):</strong> ${payload.sire.name}</td><td class="genetic-formula col-genetic-formula">${payload.sire.symbol}</td></tr>
+                <tr><td><strong>0.1 Dam (Female):</strong> ${payload.dam.name}</td><td class="genetic-formula col-genetic-formula">${payload.dam.symbol}</td></tr>
             </tbody>
         </table>`;
 

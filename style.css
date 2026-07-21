@@ -252,6 +252,11 @@ details.category:not([open]){ margin-bottom:14px }
   font-family:var(--mono); font-weight:700; font-style:italic; color:var(--forest);
   font-size:1.02em; background:var(--grass-soft); padding:5px 9px; border-radius:6px;
   text-align:center; border:1px solid var(--grass-border);
+  /* The Sapphire-group symbols (e.g. bl^1_bl^2/bl^1_bl^2) are wider than any
+     other mutation's symbol and have no natural break point (no spaces) --
+     without this they overflow past the pill's border at the 600-820px
+     tier instead of wrapping, same fix name-col already has for long names. */
+  overflow-wrap:break-word; min-width:0;
 }
 .name-col{font-size:1.04em; font-weight:800; color:var(--ink); overflow-wrap:break-word; word-break:break-word; min-width:0}
 
@@ -370,7 +375,7 @@ body.hide-genetic-symbols .col-genetic-formula{display:none !important}
   background:transparent; color:var(--forest); text-align:left; padding:7px 10px; border:none;
   border-bottom:2px solid var(--grass); font-size:.82em; text-transform:uppercase; letter-spacing:.05em;
 }
-.parents-table td{padding:11px 10px; border:none; border-bottom:1px solid var(--line); vertical-align:middle}
+.parents-table td{padding:11px 10px; border:none; border-bottom:1px solid var(--line); vertical-align:middle; overflow-wrap:break-word}
 .parents-table tr:last-child td{border-bottom:none}
 
 .genetic-formula{font-family:var(--mono); font-style:italic; color:var(--forest); font-weight:600}
@@ -392,7 +397,7 @@ th{
   border:none; font-size:.86em; text-transform:uppercase; letter-spacing:.04em;
 }
 th:first-child{border-radius:var(--r-sm) 0 0 0} th:last-child{border-radius:0 var(--r-sm) 0 0}
-td{padding:12px 13px; border:none; border-bottom:1px solid var(--line)}
+td{padding:12px 13px; border:none; border-bottom:1px solid var(--line); overflow-wrap:break-word}
 tbody tr{transition:background .12s}
 tbody tr:hover{background:var(--grass-soft)}
 tbody tr:last-child td{border-bottom:none}
@@ -463,6 +468,17 @@ button#share-btn:active{transform:translateY(0)}
   .symbol-col{font-size:.86em; padding:3px 6px}
   .name-col{font-size:.9em}
   .gene-btn-group label{font-size:.78em; padding:7px 4px; min-width:44px}
+  /* Longer notes (e.g. the Sapphire explanation) can otherwise stretch the
+     list several screens tall at this tier -- same capped-scroll treatment
+     the sub-600px breakpoint already uses, just with more headroom since
+     there's more width/height to work with here. */
+  .mutation-warning-note, .mutation-info-note{
+    max-height:140px; overflow-y:auto; scrollbar-width:thin;
+  }
+  .mutation-warning-note::-webkit-scrollbar, .mutation-info-note::-webkit-scrollbar{width:4px}
+  .mutation-warning-note::-webkit-scrollbar-thumb, .mutation-info-note::-webkit-scrollbar-thumb{
+    background:var(--line-strong); border-radius:2px;
+  }
 }
 
 @media (max-width:600px){
@@ -566,11 +582,11 @@ button#share-btn:active{transform:translateY(0)}
     display:block; font-size:.66em; font-weight:800; text-transform:uppercase;
     letter-spacing:.05em; color:var(--ink-soft); margin-bottom:3px;
   }
-  .parents-table td:nth-child(1)::before{content:"Genetic Formula"}
-  .parents-table td:nth-child(2)::before{content:"Phenotype / Mutation Name"}
-  #results-content td:nth-child(1)::before{content:"Genetic Formula"}
-  #results-content td:nth-child(2)::before{content:"Phenotype / Mutation Name"}
-  #results-content td:nth-child(3)::before{content:"Probability"}
+  .parents-table td:nth-child(1)::before{content:"Genotype / Mutation Name"}
+  .parents-table td:nth-child(2)::before{content:"Genetic Formulas"}
+  #results-content td:nth-child(1)::before{content:"Genotype / Mutation Name"}
+  #results-content td:nth-child(2)::before{content:"Probability"}
+  #results-content td:nth-child(3)::before{content:"Genetic Formulas"}
 }
 
 @media (max-width:420px){
@@ -580,6 +596,13 @@ button#share-btn:active{transform:translateY(0)}
   .symbol-col{font-size:.6em; padding:2px 5px}
   .name-col{font-size:.78em}
   .gene-btn-group label{font-size:.62em; padding:5px 1px; min-width:28px}
+  /* "Assign to: Z1 Z2" / "Phase: T1 T2" still overflowed its box by a few px
+     at the narrowest supported width (320px, e.g. iPhone SE) even with the
+     600px tier's shrinking -- tighten the label gap and pill padding a bit
+     further just at this width. */
+  .z-assign, .t-assign{padding:6px 5px}
+  .linkage-label{margin-right:2px}
+  .z-assign label, .t-assign label{padding:5px 3px; margin:0}
 }
 
 @media (max-width:600px){
